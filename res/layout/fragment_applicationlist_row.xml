@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/card">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp">
+
+        <ImageButton
+            android:id="@+id/imAppIcon"
+            android:layout_width="65dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:padding="8dp"
+            android:background="@drawable/selector" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_toRightOf="@id/imAppIcon"
+            android:padding="8dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:paddingLeft="5dp"
+                android:singleLine="true"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/text_title" />
+
+            <TextView
+                android:id="@+id/tvSyncState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:paddingLeft="5dp"
+                android:singleLine="true"
+                android:text="Sync active"
+                android:textColor="@color/text_subtitle" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/separator"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <ImageButton
+            android:id="@+id/imStateIcon"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:background="@drawable/selector_green" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="2dp"
+        android:background="@drawable/card_bottom" />
+</LinearLayout>

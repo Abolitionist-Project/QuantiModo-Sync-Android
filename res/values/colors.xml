@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="button_pressed">#CCF15B29</color>
+
+    <color name="actionbar_background">#221e1f</color>
+    <color name="window_background">#E5E5E5</color>
+
+    <color name="tabs_background">#373133</color>
+    <color name="tabs_slider">#F15B29</color>
+    <color name="tabs_text">#E1E0E0</color>
+    <color name="tabs_underline">#4D000000</color>
+
+    <color name="separator">#F2F2F2</color>
+    <color name="separator_card">#E5E5E5</color>
+    <color name="separator_popup">#B0ADA4</color>
+
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_shadow">#d3d3d3</color>
+    <color name="card_blue_background">#3f8192</color>
+    <color name="card_blue_selected_background">#ff003e4d</color>
+    <color name="card_blue_shadow">#326876</color>
+    <color name="card_button">#4FA1AD</color>
+    <color name="card_button_positive">#99CC00</color>
+
+    <color name="text_welcome">#CC000000</color>
+    <color name="text_title">#333333</color>
+    <color name="text_popup">#595853</color>
+    <color name="text_drawer">#fff3f3f3</color>
+    <color name="text_subtitle">#828282</color>
+    <color name="text_card">#797979</color>
+    <color name="text_card_light">#99000000</color>
+    <color name="text_card_spinner">#E6000000</color>
+
+    <!-- Primary --><!--
+    <color name="mood_button_ecstatic">#CC0000</color>
+    <color name="mood_button_happy">#FAEC0A</color>
+    <color name="mood_button_ok">#49E317</color>
+    <color name="mood_button_sad">#00A3CC</color>
+    <color name="mood_button_depressed">#000000</color>
+    <color name="mood_button_line">#55000000</color>
+    -->
+
+    <!-- Holo -->
+    <color name="mood_button_ecstatic">#F57233</color>
+    <color name="mood_button_happy">#E9CD1A</color>
+    <color name="mood_button_ok">#CBD02D</color>
+    <color name="mood_button_sad">#4FA1AD</color>
+    <color name="mood_button_depressed">#1F1F1F</color>
+    <color name="mood_button_line">#55000000</color>
+    <integer-array name="chart_colours">
+        <item>@color/mood_button_depressed</item>
+        <item>@color/mood_button_sad</item>
+        <item>@color/mood_button_ok</item>
+        <item>@color/mood_button_happy</item>
+        <item>@color/mood_button_ecstatic</item>
+    </integer-array>
+</resources>

@@ -1,0 +1,32 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_header_general">
+        <Preference
+            android:key="quantimodoAccount"
+            android:title="@string/pref_account" />
+   </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_synchronization">
+        <CheckBoxPreference
+            android:key="syncAppData"
+            android:title="@string/pref_sync_appdata"
+            android:defaultValue="true" />
+        <ListPreference
+            android:key="syncInterval"
+            android:title="@string/pref_sync_interval"
+            android:entryValues="@array/sync_interval_entryValues"
+            android:entries="@array/sync_interval_entries"
+            android:defaultValue="2" />
+        <CheckBoxPreference
+            android:key="wifiOnly"
+            android:title="@string/pref_wifiOnly"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="chargingOnly"
+            android:title="@string/pref_chargingOnly"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
