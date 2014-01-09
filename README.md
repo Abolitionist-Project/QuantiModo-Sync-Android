@@ -1,2 +1,0 @@
-QuantiModo-Sync
-===============
