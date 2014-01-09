@@ -2,6 +2,7 @@ package com.quantimodo.etl;
 
 import com.quantimodo.sdk.model.QuantimodoMeasurement;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public class MyFitnessPalConverter implements Converter
 
 			final double dose = ((Number) table.getData(recordNumber, "quantity")).doubleValue();
 			final String unit = foodsUnits.get(foodsID);
-			final String[] dateString = ((String) foodsTable.getData(recordNumber, "entry_date")).split("-");
+			final String[] dateString = ((String) table.getData(recordNumber, "entry_date")).split("-");
 			int mealId = ((Number) table.getData(recordNumber, "meal_id")).intValue();
 			
 			switch(mealId)
