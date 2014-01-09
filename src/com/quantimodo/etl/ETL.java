@@ -15,7 +15,8 @@ public class ETL
 			MedHelperConverter.instance, MediSafeConverter.instance,
 			SleepAsAndroidConverter.instance,
 			GoodDayJournalConverter.instance, T2MoodTrackerConverter.instance, HowAreYouFeelingConverter.instance,
-			CallRecorderConverter.instance
+			CallRecorderConverter.instance,
+			MyFitnessPalConverter.instance
 	};
 
 	public QuantimodoMeasurement[] handle(final String filename) throws IOException
