@@ -11,9 +11,12 @@ import com.quantimodo.sdk.model.QuantimodoMeasurement;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.Log;
 import com.quantimodo.sync.model.ApplicationData;
-import com.stericson.RootTools.RootTools;
+import com.quantimodo.sync.su.SU;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -97,14 +100,14 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		List<QuantimodoMeasurement> newOrUpdatedData = new ArrayList<QuantimodoMeasurement>();
 
-		//Process suProcess = SU.startProcess();  // Start an elevated process
-		//DataOutputStream outputS = new DataOutputStream(suProcess.getOutputStream());
-		//BufferedReader inputS = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
+		Process suProcess = SU.startProcess();  // Start an elevated process
+		DataOutputStream outputS = new DataOutputStream(suProcess.getOutputStream());
+		BufferedReader inputS = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
 
 		ETL etl = new ETL();                    // Get an ETL instance
 
-		String cachePath = context.getExternalCacheDir().getPath();
-		Log.i("Caching at: " + cachePath);
+		String cachePath = context.getCacheDir().getPath();
+		Log.i("Cache root path at: " + cachePath);
 
 		for (ApplicationData currentApp : syncingApps)
 		{
@@ -112,7 +115,7 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 			File cacheFile = null;
 			try
 			{
-				cacheFile = new File(context.getExternalCacheDir().getPath() + "/" + currentApp.packageName + "-" + currentApp.dataFile.getName());
+				cacheFile = new File(cachePath + "/" + currentApp.packageName + "-" + currentApp.dataFile.getName());
 
 				List<QuantimodoMeasurement> oldData = null;
 				List<QuantimodoMeasurement> newData;
@@ -129,9 +132,9 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 				}
 
 				Log.i(currentApp.packageName + ": Caching new data");
-				boolean copySuccessful = RootTools.copyFile(currentApp.dataFile.getPath(), cacheFile.getPath(), false, true);
+				SU.copyToCache(outputS, inputS, currentApp.dataFile.getPath(), cacheFile.getPath());
 
-				if (cacheFile.exists() && copySuccessful)
+				if (cacheFile.exists())
 				{
 					Log.i(currentApp.packageName + ": Extracting new data");
 					newData = Arrays.asList(etl.handle(cacheFile));
@@ -179,14 +182,14 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 				e.printStackTrace();
 				if (cacheFile != null)
 				{
-					boolean deletedFile = cacheFile.delete();
-					Log.i("Deleted cache file: " + cacheFile.getPath() + ", result: " + deletedFile);
+					//boolean deletedFile = cacheFile.delete();
+					//Log.i("Deleted cache file: " + cacheFile.getPath() + ", result: " + deletedFile);
 				}
 			}
 
 		}
 
-		//SU.stopProcess(suProcess, false);
+		SU.stopProcess(suProcess, false);
 
 		if (newOrUpdatedData.size() > 0)
 		{
@@ -196,8 +199,5 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 
 		SharedPreferences prefs = context.getSharedPreferences("com.quantimodo.app_preferences", Context.MODE_MULTI_PROCESS);
 		prefs.edit().putLong("lastSuccessfulAppSync", System.currentTimeMillis()).commit();
-		// Stop the running process
-		//SyncTimeReceiver.setAlarm(service);      // Schedule next sync
-		//service.stopSelf();                      // Stop the service
 	}
 }

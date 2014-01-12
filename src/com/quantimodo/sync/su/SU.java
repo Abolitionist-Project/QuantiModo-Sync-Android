@@ -1,6 +1,12 @@
 package com.quantimodo.sync.su;
 
-/*public class SU
+import com.quantimodo.sync.Log;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+public class SU
 {
 	public static Process startProcess()
 	{
@@ -42,7 +48,11 @@ package com.quantimodo.sync.su;
 	{
 		try
 		{
+			int uid = android.os.Process.myUid();
+
 			outputS.writeBytes("cp \"" + filePath + "\" \"" + cachePath + "\"\n");
+			outputS.writeBytes("chown " + uid + ":" + uid + " \"" + cachePath + "\"\n");
+			outputS.writeBytes("chmod 660 \"" + cachePath + "\"\n");
 
 			waitForEnd(inputS, outputS);
 
@@ -67,4 +77,4 @@ package com.quantimodo.sync.su;
 		{
 		}
 	}
-}*/
+}

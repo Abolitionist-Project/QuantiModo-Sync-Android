@@ -92,7 +92,7 @@ public class SettingsActivity extends PreferenceActivity
 		{
 			@Override public boolean onPreferenceClick(Preference preference)
 			{
-				String[] authorities = {"com.quantimodo.app.content-appdata"};
+				String[] authorities = {"com.quantimodo.sync.content-appdata"};
 				Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
 				intent.putExtra(Settings.EXTRA_AUTHORITIES, authorities);
 				startActivity(intent);
