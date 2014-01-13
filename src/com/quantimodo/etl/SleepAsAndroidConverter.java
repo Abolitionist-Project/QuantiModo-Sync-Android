@@ -48,7 +48,7 @@ public class SleepAsAndroidConverter implements Converter
 
 			double quality = ((Number) table.getData(recordNumber, "quality")).doubleValue();
 
-			result[resultNumber] = new QuantimodoMeasurement("Sleep as Android", "Sleep", "Sleep", "SUM", startTime, durationMinutes, "min");
+			result[resultNumber] = new QuantimodoMeasurement("Sleep as Android", "Sleep Duration", "Sleep", "SUM", startTime, durationMinutes, "min");
 			result[resultNumber + 1] = new QuantimodoMeasurement("Sleep as Android", "Sleep Quality", "Sleep", "MEAN", startTime, quality, "/1");
 		}
 
