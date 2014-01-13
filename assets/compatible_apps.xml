@@ -44,6 +44,11 @@
         dataFile="/internal/databases/medtracker" rootRequired="true">
         <DataTypes medicationConsumption="true"></DataTypes>
     </App>
+    
+    <App label="MyFitnessPal" packageName="com.myfitnesspal.android" developer="MyFitnessPal"
+        dataFile="/internal/databases/myfitnesspal.db" rootRequired="true">
+        <DataTypes food="true"></DataTypes>
+    </App>
 
     <App label="MediSafe" packageName="com.medisafe.android.client" developer="Medisafe Project"
         dataFile="/internal/databases/mediapps.db" rootRequired="true">
