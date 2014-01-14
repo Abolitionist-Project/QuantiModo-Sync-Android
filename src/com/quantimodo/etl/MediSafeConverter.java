@@ -40,7 +40,7 @@ public class MediSafeConverter implements Converter
 				final int recordCount = medicines.getRecordCount();
 				for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 				{
-					medicineNames.put((Integer) medicines.getData(recordNumber, "id"), (String) medicines.getData(recordNumber, "name"));
+					medicineNames.put(((Long) medicines.getData(recordNumber, "id")).intValue(), (String) medicines.getData(recordNumber, "name"));
 				}
 			}
 
