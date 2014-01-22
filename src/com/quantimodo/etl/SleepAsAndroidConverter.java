@@ -42,6 +42,7 @@ public class SleepAsAndroidConverter implements Converter
 		{
 			long startTime = ((Number) table.getData(recordNumber, "startTime")).longValue();
 			long toTime = ((Number) table.getData(recordNumber, "toTime")).longValue();
+
 			int rating = ((Number) table.getData(recordNumber, "rating")).intValue();
 			int cycles = ((Number) table.getData(recordNumber, "cycles")).intValue();
 			double noise = ((Number) table.getData(recordNumber, "noiseLevel")).doubleValue();
@@ -53,12 +54,12 @@ public class SleepAsAndroidConverter implements Converter
 			//measurements.add(new QuantimodoMeasurement("Sleep as Android", "Bedtime", "Sleep", "SUM", startTime, startTime / 1000, "epoch"));
 			//measurements.add(new QuantimodoMeasurement("Sleep as Android", "Wakeup Time", "Sleep", "SUM", toTime, toTime / 1000, "epoch"));
 
-			measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Duration", "Sleep", "SUM", startTime, durationMinutes, "min"));
-			measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Cycles", "Sleep", "SUM", startTime, cycles, "event"));
+			measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Duration", "Sleep", "SUM", toTime, durationMinutes, "min"));
+			measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Cycles", "Sleep", "SUM", toTime, cycles, "event"));
 
 			if(noise >= 0 && noise <= 1)
 			{
-				measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Noise Level", "Sleep", "SUM", startTime, noise, "/1"));
+				measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Noise Level", "Sleep", "SUM", toTime, noise, "/1"));
 			}
 			if(rating >= 0 && rating <= 5)
 			{
