@@ -44,7 +44,7 @@ public class SleepAsAndroidConverter implements Converter
 			long toTime = ((Number) table.getData(recordNumber, "toTime")).longValue();
 			int rating = ((Number) table.getData(recordNumber, "rating")).intValue();
 			int cycles = ((Number) table.getData(recordNumber, "cycles")).intValue();
-			double noise = ((Number) table.getData(recordNumber, "noise")).doubleValue();
+			double noise = ((Number) table.getData(recordNumber, "noiseLevel")).doubleValue();
 			double quality = ((Number) table.getData(recordNumber, "quality")).doubleValue();
 
 			long duration = toTime - startTime;
