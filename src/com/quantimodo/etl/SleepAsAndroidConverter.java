@@ -55,15 +55,15 @@ public class SleepAsAndroidConverter implements Converter
 			//measurements.add(new QuantimodoMeasurement("Sleep as Android", "Wakeup Time", "Sleep", "SUM", toTime, toTime / 1000, "epoch"));
 
 			measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Duration", "Sleep", "SUM", toTime, durationMinutes, "min"));
-			measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Cycles", "Sleep", "SUM", toTime, cycles, "event"));
+			measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Cycles", "Sleep", "MEAN", toTime, cycles, "event"));
 
 			if(noise >= 0 && noise <= 1)
 			{
-				measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Noise Level", "Sleep", "SUM", toTime, noise, "/1"));
+				measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Noise Level", "Sleep", "MEAN", toTime, noise, "/1"));
 			}
 			if(rating >= 0 && rating <= 5)
 			{
-				measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Rating", "Sleep", "SUM", toTime, rating, "/6"));
+				measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Rating", "Sleep", "MEAN", toTime, rating, "/6"));
 			}
 			if(quality >= 0 && quality <= 1)
 			{
