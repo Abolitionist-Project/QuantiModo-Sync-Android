@@ -44,11 +44,11 @@ public class SleepAsAndroidConverter implements Converter
 			long toTime = ((Number) table.getData(recordNumber, "toTime")).longValue();
 			int rating = ((Number) table.getData(recordNumber, "rating")).intValue();
 			int cycles = ((Number) table.getData(recordNumber, "cycles")).intValue();
-			double noise = ((Number) table.getData(recordNumber, "cycles")).doubleValue();
+			double noise = ((Number) table.getData(recordNumber, "noise")).doubleValue();
 			double quality = ((Number) table.getData(recordNumber, "quality")).doubleValue();
 
 			long duration = toTime - startTime;
-			float durationMinutes = (duration / 1000) / 60f;
+			float durationMinutes = (duration / 1000) / 60;
 
 			//measurements.add(new QuantimodoMeasurement("Sleep as Android", "Bedtime", "Sleep", "SUM", startTime, startTime / 1000, "epoch"));
 			//measurements.add(new QuantimodoMeasurement("Sleep as Android", "Wakeup Time", "Sleep", "SUM", toTime, toTime / 1000, "epoch"));
