@@ -10,7 +10,7 @@ public class MyFitnessPalConverter implements Converter
 {
 	public static final MyFitnessPalConverter instance = new MyFitnessPalConverter();
 
-	private static final String[] unitTypes = new String[]{"tablets", "mg", "mL", "drops", "applications", "mcg", "units", "puffs", "sprays", "capsules", "g"};
+	private static final String[] unitTypes = new String[]{"serving", "serving", "serving", "serving", "serving", "serving", "serving", "serving", "serving", "serving", "serving"};
 
 	private MyFitnessPalConverter()
 	{
