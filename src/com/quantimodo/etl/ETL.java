@@ -4,6 +4,7 @@ import com.quantimodo.sdk.model.QuantimodoMeasurement;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class ETL
 {
@@ -100,6 +101,42 @@ public class ETL
 				System.out.println(outputRecord);
 			}
 		}
+
+		return outputRecords;
+	}
+	
+	public void saveHistory(final String filepath, List<HistoryThing> records) {
+		
+		HistoryThing[] array = new HistoryThing[records.size()];
+		array = records.toArray(array);
+		
+		DatabaseView database = HistoryConverter.instance.convert(array);
+		SQLiteWriter.instance.setDatabaseView(filepath, database);
+	}
+	
+	public HistoryThing[] loadHistory(final File file) throws IOException {
+		
+		if (file == null) {
+			throw new NullPointerException("ETL.loadhistory was given null in place of a File");
+		}
+		
+		//get databaseview
+		DatabaseView database = null;
+		try	{
+			database = SQLiteReader.instance.getDatabaseView(file);
+		}
+		catch (final IOException e) {
+				throw e;
+		}		
+		
+		if (database == null)
+			throw new IOException("No Reader can decipher this file format.");
+		
+		// Convert records
+		final HistoryThing[] outputRecords = HistoryConverter.instance.convert(database);
+		
+		if (outputRecords == null)
+			throw new IOException("No Converter understands this data." + database.toHTML());
 
 		return outputRecords;
 	}

@@ -15,6 +15,8 @@ public interface DatabaseView
 	Table getTable(int table);
 
 	Table getTable(CharSequence tableName);
+	
+	void setTable(Table table, CharSequence tableName);
 
 	String toString();
 

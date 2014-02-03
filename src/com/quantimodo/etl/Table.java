@@ -6,6 +6,7 @@ public interface Table
 
 	int getFieldCount();
 
+	String getFieldType(int field);
 	String getFieldName(int field);
 
 	int getFieldNumber(CharSequence fieldName);

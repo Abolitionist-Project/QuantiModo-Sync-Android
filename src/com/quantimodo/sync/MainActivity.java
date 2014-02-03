@@ -47,13 +47,20 @@ public class MainActivity extends Activity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch (item.getItemId())
-		{
-		case R.id.action_settings:
-			Intent openPrefsIntent = new Intent(this, SettingsActivity.class);
+		int id = item.getItemId();
+		Intent openPrefsIntent = null;
+		
+		if(id == R.id.action_history) {
+			openPrefsIntent = new Intent(this, HistoryActivity.class);
 			startActivity(openPrefsIntent);
 			return true;
-		default:
+		}
+		else if(id == R.id.action_settings) {
+			openPrefsIntent = new Intent(this, SettingsActivity.class);
+			startActivity(openPrefsIntent);
+			return true;
+		}
+		else {
 			return super.onOptionsItemSelected(item);
 		}
 	}

@@ -16,7 +16,7 @@ public class AccupedoConverter implements Converter
 	private AccupedoConverter()
 	{
 	}
-
+	
 	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("diaries")))

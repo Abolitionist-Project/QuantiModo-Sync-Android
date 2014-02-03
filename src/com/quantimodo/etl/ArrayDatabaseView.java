@@ -78,6 +78,10 @@ public class ArrayDatabaseView implements DatabaseView
 		}
 		return getTable(table);
 	}
+	
+	public void setTable(Table table, CharSequence tableName) {
+		
+	}
 
 	// Returns whether a table is in the database.
 	public boolean hasTable(CharSequence tableName)

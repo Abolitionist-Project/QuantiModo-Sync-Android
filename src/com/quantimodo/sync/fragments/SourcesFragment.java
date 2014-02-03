@@ -46,13 +46,14 @@ public class SourcesFragment extends Fragment
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch (item.getItemId())
-		{
-		case R.id.action_sync:
+		int id = item.getItemId();
+		
+		if(id == R.id.action_sync) {
 			Intent newIntent = new Intent(getActivity(), AppDataSyncService.class);
 			getActivity().startService(newIntent);
 			return true;
-		default:
+		}
+		else {
 			return super.onOptionsItemSelected(item);
 		}
 	}
@@ -85,7 +86,6 @@ public class SourcesFragment extends Fragment
 			super(getChildFragmentManager());
 		}
 
-		@Override
 		public CharSequence getPageTitle(int position)
 		{
 			return PAGER_TITLES[position];

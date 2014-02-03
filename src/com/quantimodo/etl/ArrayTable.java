@@ -10,6 +10,7 @@ public final class ArrayTable implements Table
 
 	private final String name;
 
+	private String[] fieldTypes = null;
 	private final String[] fieldNames;
 	private final Object[][] records;
 
@@ -17,11 +18,11 @@ public final class ArrayTable implements Table
 	private final int fieldCount;
 
 	// Disable default constructor.
-	private ArrayTable()
+	public ArrayTable()
 	{
 		throw new UnsupportedOperationException("The default constructor is not valid.");
 	}
-
+	
 	// Constructs ETLData from arrays.
 	public ArrayTable(final String name, final String[] fieldNames, final Object[][] records)
 	{
@@ -49,6 +50,12 @@ public final class ArrayTable implements Table
 
 		this.fieldNames = fieldNames;
 		this.records = records;
+	}
+	
+	public ArrayTable(final String name, final String[] fieldTypes, final String[] fieldNames, final Object[][] records) {
+		
+		this(name, fieldNames, records);
+		this.fieldTypes = fieldTypes;		
 	}
 
 	// Constructs ETLData from java.util.Lists.
@@ -103,6 +110,18 @@ public final class ArrayTable implements Table
 			}
 		}
 		return -1;
+	}
+	
+	//Returns the type of the given field number.
+	public String getFieldType(final int field) {
+		
+		if(fieldTypes == null)
+			throw new ArrayIndexOutOfBoundsException("Field type of the number " + field + " is null.");
+		
+		if((field < 0 || field >= fieldCount))
+			throw new ArrayIndexOutOfBoundsException("Field number " + field + " doesn't exist.");
+		
+		return fieldTypes[field];
 	}
 
 	// Returns the name of the given field number.

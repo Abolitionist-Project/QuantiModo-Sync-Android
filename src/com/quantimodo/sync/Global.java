@@ -14,6 +14,7 @@ public class Global
 	public static final String QM_SCOPES = "writemeasurements";
 	public static final String QM_ID = "QuantiSync";
 	public static final String QM_SECRET = "joeyrpmslrf8w4wef6weq9qytpu50374bosgr8";
+	public static final String historyPackage = "syncs.sqlite";
 
 	public static List<ApplicationData> applications = new ArrayList<ApplicationData>();
 	public static List<SensorData> sensors = new ArrayList<SensorData>();

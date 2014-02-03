@@ -6,6 +6,7 @@ import android.content.*;
 import android.os.Bundle;
 import android.os.Handler;
 import com.quantimodo.etl.ETL;
+import com.quantimodo.etl.HistoryThing;
 import com.quantimodo.sdk.QuantimodoClient;
 import com.quantimodo.sdk.model.QuantimodoMeasurement;
 import com.quantimodo.sync.Global;
@@ -16,9 +17,11 @@ import com.quantimodo.sync.su.SU;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
@@ -28,6 +31,7 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 	private final AccountManager accountManager;
 
 	private String authToken;
+	
 	private ArrayList<ApplicationData> syncingApps;
 
 	public AppDataSyncAdapter(Context context, boolean autoInitialize)
@@ -115,7 +119,8 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 			File cacheFile = null;
 			try
 			{
-				cacheFile = new File(cachePath + "/" + currentApp.packageName + "-" + currentApp.dataFile.getName());
+				String filepath = cachePath + "/" + currentApp.packageName + "-" + currentApp.dataFile.getName();
+				cacheFile = new File(filepath);
 
 				List<QuantimodoMeasurement> oldData = null;
 				List<QuantimodoMeasurement> newData;
@@ -194,10 +199,44 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 		if (newOrUpdatedData.size() > 0)
 		{
 			QuantimodoClient qmClient = QuantimodoClient.getInstance();
-			qmClient.putMeasurementsSynchronous(context, authToken, newOrUpdatedData);
+			int syncState = qmClient.putMeasurementsSynchronous(context, authToken, newOrUpdatedData);
+			saveHistory(etl, syncState, newOrUpdatedData);	
 		}
 
 		SharedPreferences prefs = context.getSharedPreferences("com.quantimodo.app_preferences", Context.MODE_MULTI_PROCESS);
 		prefs.edit().putLong("lastSuccessfulAppSync", System.currentTimeMillis()).commit();
+	}
+	
+	private void saveHistory(ETL etl, int syncState, List<QuantimodoMeasurement> syncedData) {
+		
+		if(syncedData.size() == 0)
+			return;
+		
+		List<HistoryThing> syncResult = new ArrayList<HistoryThing>();
+		
+		String label = "";
+		int syncCount = 0;
+		
+		while(syncedData.size() != 0) {
+			
+			label = syncedData.get(0).source;
+			
+			for(Iterator<QuantimodoMeasurement> iterator = syncedData.iterator(); iterator.hasNext();) {
+				
+				QuantimodoMeasurement record = iterator.next();
+				if(record.source.equals(label)) {
+					syncCount++;
+					iterator.remove();
+				}
+			}
+			
+			syncResult.add(new HistoryThing(label, syncCount, syncState));
+			syncCount = 0;
+		}		
+		
+		String cachePath = context.getCacheDir().getPath();
+		String filepath = cachePath + "/" + Global.historyPackage;
+			
+		etl.saveHistory(filepath, syncResult); 
 	}
 }

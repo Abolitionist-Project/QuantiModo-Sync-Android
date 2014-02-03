@@ -66,7 +66,6 @@ public class SQLiteReader implements Reader
 				final Object[][] tableData;
 				{
 					final List<Object[]> tableDataList = new ArrayList<Object[]>();
-					int rowNumber = 0;
 					while (statement.step())
 					{
 						final Object[] rowData = new Object[columnCount];

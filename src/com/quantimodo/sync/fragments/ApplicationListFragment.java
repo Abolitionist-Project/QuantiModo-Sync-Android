@@ -76,13 +76,14 @@ public class ApplicationListFragment extends Fragment
 
 	@Override public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch (item.getItemId())
-		{
-		case R.id.action_sync:
+		int id = item.getItemId();
+		
+		if(id == R.id.action_sync) {
 			QuantimodoClient qmClient = QuantimodoClient.getInstance();
 			ContentResolver.requestSync(qmClient.getAccount(this.getActivity()), "com.quantimodo.sync.content-appdata", new Bundle());
 			return true;
-		default:
+		}
+		else {
 			return super.onOptionsItemSelected(item);
 		}
 	}

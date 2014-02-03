@@ -30,6 +30,7 @@ public class AppDataSyncService extends Service
 			if (syncAdapter == null)
 			{
 				syncAdapter = new AppDataSyncAdapter(getApplicationContext(), true);
+				android.os.Debug.waitForDebugger();
 			}
 		}
 	}
