@@ -54,14 +54,13 @@
 
         <TextView
             android:id="@+id/tvSyncState"
-            android:layout_width="95dp"
+            android:layout_width="70dp"
             android:layout_height="match_parent"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:singleLine="true"
-            android:text="successed"
             android:textColor="@color/text_title"
             android:textSize="14sp"
             android:textStyle="bold" />

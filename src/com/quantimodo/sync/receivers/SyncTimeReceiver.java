@@ -7,10 +7,9 @@ import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import com.quantimodo.sdk.QuantimodoClient;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.Log;
-import com.quantimodo.sync.sync.AppDataSyncService;
-import com.quantimodo.sdk.QuantimodoClient;
 
 public class SyncTimeReceiver extends BroadcastReceiver
 {
@@ -31,18 +30,7 @@ public class SyncTimeReceiver extends BroadcastReceiver
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		Global.wifiOnly = prefs.getBoolean("wifiOnly", true);
 
-		if (canSync(context))
-		{
-			Intent newIntent = new Intent(context, AppDataSyncService.class);
-			context.startService(newIntent);
-		}
-		else
-		{
-			setAlarm(context);
-		}
 	}
 
 	/*
@@ -100,7 +88,7 @@ public class SyncTimeReceiver extends BroadcastReceiver
 			switch (syncInterval)
 			{
 			case INTERVAL_MANUAL:
-				ContentResolver.removePeriodicSync(qmAccount, "com.quantimodo.sync.content-appdata", new Bundle());
+				ContentResolver.removePeriodicSync(qmAccount, "com.quantimodo.sync.appdata.provider", new Bundle());
 				return;
 			case INTERVAL_HOURLY:
 				interval = INTERVAL_HOURLY_MILLIS;
@@ -120,8 +108,8 @@ public class SyncTimeReceiver extends BroadcastReceiver
 			}
 
 			Log.i("Set " + qmAccount.name + " sync every " + interval);
-			ContentResolver.setSyncAutomatically(qmAccount, "com.quantimodo.sync.content-appdata", true);
-			ContentResolver.addPeriodicSync(qmAccount, "com.quantimodo.sync.content-appdata", new Bundle(), interval / 1000);
+			ContentResolver.setSyncAutomatically(qmAccount, "com.quantimodo.sync.appdata.provider", true);
+			ContentResolver.addPeriodicSync(qmAccount, "com.quantimodo.sync.appdata.provider", new Bundle(), interval / 1000);
 		}
 	}
 }

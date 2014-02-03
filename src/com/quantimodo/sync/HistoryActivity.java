@@ -1,34 +1,38 @@
 package com.quantimodo.sync;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
 import android.app.Activity;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
 import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import com.quantimodo.etl.ETL;
-import com.quantimodo.etl.HistoryThing;
+import com.quantimodo.sync.databases.QuantiSyncContentProvider;
+import com.quantimodo.sync.databases.QuantiSyncDbHelper;
 import com.quantimodo.sync.model.ApplicationData;
+import com.quantimodo.sync.model.HistoryThing;
 
-public class HistoryActivity extends Activity {
-	
-	public List<HistoryThing> variables = null;
-	
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public class HistoryActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor>
+{
+	private static final int URL_HISTORYLOADER = 0;
+	public List<HistoryThing> historyItems = null;
+
+	private HistoryAdapter adapter;
+
 	@Override 
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		
 		super.onCreate(savedInstanceState);
 		
@@ -37,72 +41,66 @@ public class HistoryActivity extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		GridView listView = (GridView) findViewById(R.id.historylist);
-		listView.setAdapter(new HistoryAdapter());
-		
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			new LoadHistoryAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		else
-			new LoadHistoryAsyncTask().execute();
+
+		adapter = new HistoryAdapter();
+		listView.setAdapter(adapter);
+
+		getLoaderManager().initLoader(URL_HISTORYLOADER, null, this);
 	}
-	
-	public boolean onCreateOptionMenu(Menu menu) {
-		
-		getMenuInflater().inflate(R.menu.history, menu);
-		return true;
-	}
-	
-	public boolean onOptionItemSelected(MenuItem item) {
-		
-		return super.onOptionsItemSelected(item);
-	}
-	
-	public class LoadHistoryAsyncTask extends AsyncTask<Object, String, String> {
-		
-		public LoadHistoryAsyncTask() {
-			
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle)
+	{
+		switch(loaderId)
+		{
+		case URL_HISTORYLOADER:
+			return new CursorLoader(HistoryActivity.this.getApplicationContext(), QuantiSyncContentProvider.CONTENT_URI_HISTORY, null, null, null, null);
+		default:
+			return null;
 		}
-		
-		@Override
-		protected String doInBackground(Object... arg0) {
-			
-			ETL etl = new ETL(); 
-			File cacheFile = null;
-			
-			String cachePath = getCacheDir().getPath();
-			
-			try
-			{				
-				String filepath = cachePath + "/" + Global.historyPackage;
-				cacheFile = new File(filepath);
-				
-				if (!cacheFile.exists()) {		
-					Log.i("No history sqlite file!!!");
-					return null;
-					
-				}
-				
-				variables = Arrays.asList(etl.loadHistory(cacheFile));
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor)
+	{
+		if(cursor == null)
+		{
+			Log.i("History cursor is null");
+			return;
+		}
+
+		switch(cursorLoader.getId())
+		{
+		case URL_HISTORYLOADER:
+			if(historyItems == null)
+			{
+				historyItems = new ArrayList<HistoryThing>(cursor.getCount());
 			}
-			catch (Exception e) {
-				e.printStackTrace();
+
+			int packageNameColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.PACKAGENAME);
+			int packageLabelColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.PACKAGELABEL);
+			int timestampColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.TIMESTAMP);
+			int syncCountColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.SYNCCOUNT);
+			int syncErrorColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.SYNCERROR);
+			for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext())
+			{
+				historyItems.add(
+						new HistoryThing(cursor.getString(packageNameColumn),
+										 cursor.getString(packageLabelColumn),
+										 new Date(cursor.getLong(timestampColumn)),
+										 cursor.getInt(syncCountColumn),
+										 cursor.getString(syncErrorColumn)));
 			}
-			
-			return "Done";
-		}
-		
-		@Override
-		protected void onProgressUpdate(String... values) {
-			
-			super.onProgressUpdate(values);
-		}
-		
-		@Override
-		protected void onPostExecute(String result) {
-			
-			super.onPostExecute(result);
+			break;
 		}
 	}
-	
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> cursorLoader)
+	{
+
+	}
+
 	static class ViewHolder
 	{
 		ImageButton appIcon;
@@ -135,37 +133,52 @@ public class HistoryActivity extends Activity {
 				
 				convertView.setTag(holder);
 			}
-			else {
+			else
+			{
 				holder = (ViewHolder) convertView.getTag();
 			}
 			
-			HistoryThing entry = variables.get(position);
+			HistoryThing entry = historyItems.get(position);
 			
 			ApplicationData application = null;
-			for( ApplicationData temp : Global.applications) {
-				
-				if(temp.label != null && temp.label.equals(entry.label)) {
+			for( ApplicationData temp : Global.applications)
+			{
+				if(temp.label != null && temp.label.equals(entry.packageLabel))
+				{
 					application = temp;
 					break;
 				}
 			}
-			
-			holder.label.setText(entry.label);
-			
-			if(application.icon != null)
-				holder.appIcon.setImageDrawable(application.icon);
-			else
+
+			if(application == null)
+			{
+				holder.label.setText(entry.packageLabel);
 				holder.appIcon.setImageResource(R.drawable.ic_appiconplaceholder);
-			
+			}
+			else
+			{
+				holder.label.setText(application.label);
+				if(application.icon == null)
+				{
+					holder.appIcon.setImageResource(R.drawable.ic_appiconplaceholder);
+				}
+				else
+				{
+					holder.appIcon.setImageDrawable(application.icon);
+				}
+			}
+
 			String syncCountString = String.format("%d measurements were synced", entry.syncCount);
 			holder.syncCount.setText(syncCountString);
-			if(entry.syncResult == 1) {
-				holder.syncState.setTextColor(Color.parseColor("#99cc00"));
-				holder.syncState.setText("successed");
+			if(entry.syncError == null)
+			{
+				holder.syncState.setTextColor(Color.parseColor("#99CC00"));
+				holder.syncState.setText("Synced");
 			}
-			else {
+			else
+			{
 				holder.syncState.setTextColor(Color.RED);
-				holder.syncState.setText("failed");
+				holder.syncState.setText("Failed");
 			}
 
 			return convertView;
@@ -174,23 +187,28 @@ public class HistoryActivity extends Activity {
 		@Override
 		public int getCount() {
 			
-			if(variables == null)
+			if(historyItems == null)
+			{
 				return 0;
+			}
 			
-			return variables.size();
+			return historyItems.size();
 		}
 
 		@Override
-		public Object getItem(int position) {
-			
-			if(variables == null)
+		public Object getItem(int position)
+		{
+			if(historyItems == null)
+			{
 				return 0;
-			
-			return variables.get(position);
+			}
+
+			return historyItems.get(position);
 		}
 
 		@Override
-		public long getItemId(int position) {
+		public long getItemId(int position)
+		{
 			return position;
 		}		
 	}

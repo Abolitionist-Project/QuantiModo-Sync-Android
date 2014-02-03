@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.quantimodo.sync"
-    android:versionCode="100"
-    android:versionName="1.0.0">
+    android:versionCode="101"
+    android:versionName="1.0.1">
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Default" 
-        android:debuggable="true">
+        android:theme="@style/Default">
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -39,10 +39,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        
+
         <activity
             android:name=".HistoryActivity"
-            android:theme="@style/Default.WhiteBg"
             android:label="@string/title_history"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -57,22 +56,6 @@
 
         <service
             android:name=".sync.AppDataSyncService"
-            android:icon="@drawable/ic_launcher"
-            android:label="QuantiModo Sync Service"
-            android:enabled="true"
-            android:debuggable="true" />
-
-        <receiver android:name=".receivers.PackagesChangedReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_ADDED" />
-                <action android:name="android.intent.action.PACKAGE_REMOVED" />
-
-                <data android:scheme="package" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name="com.quantimodo.sync.sync.AppDataSyncService"
             android:exported="true"
             android:process=":sync">
             <intent-filter>
@@ -85,10 +68,22 @@
 
         <provider
             android:name=".sync.AppDataContentProvider"
-            android:label="Tracking apps"
             android:authorities="com.quantimodo.sync.content-appdata"
             android:syncable="true"
-            android:exported="false" />
-    </application>
+            android:exported="false"
+            android:label="Tracking apps" />
 
+        <provider
+            android:name="com.quantimodo.sync.databases.QuantiSyncContentProvider"
+            android:authorities="com.quantimodo.sync.provider"
+            android:exported="false" />
+
+        <receiver android:name=".receivers.PackagesChangedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+    </application>
 </manifest>
