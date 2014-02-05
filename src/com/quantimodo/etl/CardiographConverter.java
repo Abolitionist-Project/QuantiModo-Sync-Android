@@ -1,6 +1,9 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
+
+import java.util.ArrayList;
 
 public class CardiographConverter implements Converter
 {
@@ -10,7 +13,7 @@ public class CardiographConverter implements Converter
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("history")))
 		{
@@ -24,16 +27,19 @@ public class CardiographConverter implements Converter
 		}
 
 		final int recordCount = table.getRecordCount();
-		final QuantimodoMeasurement[] result = new QuantimodoMeasurement[recordCount];
+
+		final ArrayList<Measurement> measurements = new ArrayList<Measurement>(recordCount);
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
-			final long timestamp = ((Number) table.getData(recordNumber, "history_date")).longValue();
+			final long timestamp = ((Number) table.getData(recordNumber, "history_date")).longValue() / 1000;
 			final int bpm = ((Number) table.getData(recordNumber, "history_bpm")).intValue();
 
-			//result[recordNumber] = new QuantimodoMeasurement("Cardiograph", "vital sign", "heart rate", false, false, false, bpm, "bpm", timestamp, 0);
-			result[recordNumber] = new QuantimodoMeasurement("CardioGraph", "Heart Rate", "Vital Signs", "MEAN", timestamp, bpm, "bmp");
+			measurements.add(new Measurement(timestamp, bpm));
+			//result[recordNumber] = new QuantimodoMeasurement("CardioGraph", "Heart Rate", "Vital Signs", "MEAN", timestamp, bpm, "bmp");
 		}
 
-		return result;
+		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(1);
+		measurementSets.add(new MeasurementSet("Heart Rate", "Vital Signs", "bpm",MeasurementSet.COMBINE_MEAN, "CardioGraph", measurements));
+		return measurementSets;
 	}
 }

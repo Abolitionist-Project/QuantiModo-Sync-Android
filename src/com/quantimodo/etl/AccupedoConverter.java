@@ -1,23 +1,22 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 public class AccupedoConverter implements Converter
 {
 	public static final AccupedoConverter instance = new AccupedoConverter();
 
 	private static final String[] REQUIRED_FIELD_NAMES = new String[]{"steps", "distance", "calories", "steptime", "achievement", "year", "month", "day", "hour", "minute"};
-	private static final QuantimodoMeasurement[] EMPTY_RESULT = new QuantimodoMeasurement[0];
 
 	private AccupedoConverter()
 	{
 	}
 	
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("diaries")))
 		{
@@ -36,10 +35,13 @@ public class AccupedoConverter implements Converter
 		final int recordCount = table.getRecordCount();
 		if (recordCount == 0)
 		{
-			return EMPTY_RESULT;
+			return new ArrayList<MeasurementSet>(0);
 		}
 
-		final List<QuantimodoMeasurement> results = new ArrayList<QuantimodoMeasurement>(4 * recordCount);
+		final ArrayList<Measurement> stepGoalMeasurements = new ArrayList<Measurement>(recordCount);
+		final ArrayList<Measurement> stepsMeasurements = new ArrayList<Measurement>(recordCount);
+		final ArrayList<Measurement> distanceMeasurements = new ArrayList<Measurement>(recordCount);
+		final ArrayList<Measurement> caloriesMeasurements = new ArrayList<Measurement>(recordCount);
 
 		int dayStartRecord = 0;
 		int lastStepCount = 0;
@@ -70,30 +72,31 @@ public class AccupedoConverter implements Converter
 			final double outputCalories;
 			final int outputSteppingDuration;
 			final boolean outputAchievedGoal;
-			final long outputTime = inputTime - steppingDuration;
+			final long outputTime = (inputTime - steppingDuration); // Convert to seconds;
 
 			if ((stepCount >= lastStepCount) && (lastDay == day) && (lastMonth == month) && (lastYear == year))
 			{
 				outputStepCount = stepCount - lastStepCount;
 				outputDistance = distance - lastDistance;
 				outputCalories = calories - lastCalories;
-				outputSteppingDuration = steppingDuration - lastSteppingDuration;
+				outputSteppingDuration = (steppingDuration - lastSteppingDuration) / 1000;  // Convert to seconds
 				outputAchievedGoal = achievedGoal & (!lastAchievedGoal);
 			}
 			else
 			{
 				// If the person reset their steps because someone was using the phone, delete all the previous records for the day.
-				if ((lastDay == day) && (lastMonth == month) && (lastYear == year))
+				//TODO rewrite this to use timestamp instead of record number
+				/*if ((lastDay == day) && (lastMonth == month) && (lastYear == year))
 				{
-					for (int invalidRecordNumber = results.size() - 1; invalidRecordNumber >= dayStartRecord; invalidRecordNumber--)
+					for (int invalidRecordNumber = stepsMeasurements.size() - 1; invalidRecordNumber >= dayStartRecord; invalidRecordNumber--)
 					{
 						results.remove(invalidRecordNumber);
 					}
 				}
 				else
 				{
-					dayStartRecord = results.size();
-				}
+					dayStartRecord = stepsMeasurements.size();
+				}*/
 
 				outputStepCount = stepCount;
 				outputDistance = distance;
@@ -106,16 +109,18 @@ public class AccupedoConverter implements Converter
 			{
 				if (outputAchievedGoal)
 				{
-					long timestamp = (new GregorianCalendar(year, month - 1, day)).getTimeInMillis();
-					//results.add(new QuantimodoMeasurement("Accupedo", "goals", "daily step count goal reached", false, true, true, 1.0, "(count)", (new GregorianCalendar(year, month - 1, day)).getTimeInMillis(), 86400));
-					results.add(new QuantimodoMeasurement("Accupedo", "Daily Step Count Goal Reached", "Goals", "SUM", timestamp, 1.0, "count"));
+					long timestamp = (new GregorianCalendar(year, month - 1, day)).getTimeInMillis() / 1000;
+					stepGoalMeasurements.add(new Measurement(timestamp, 1));
+					//results.add(new QuantimodoMeasurement("Accupedo", "Daily Step Count Goal Reached", "Goals", "SUM", timestamp, 1, "count"));
 				}
+
+				stepsMeasurements.add(new Measurement(outputTime, outputStepCount, steppingDuration));
+				distanceMeasurements.add(new Measurement(outputTime, outputDistance, steppingDuration));
+				caloriesMeasurements.add(new Measurement(outputTime, outputCalories, steppingDuration));
+
 				//results.add(new QuantimodoMeasurement("Accupedo", "activity", "steps", false, true, true, outputStepCount, "steps", outputTime, (outputSteppingDuration + 500) / 1000));
-				results.add(new QuantimodoMeasurement("Accupedo", "Steps", "Physical Activity", "SUM", outputTime, outputStepCount, "steps"));
 				//results.add(new QuantimodoMeasurement("Accupedo", "activity", "walk/run distance", false, true, true, outputDistance, "mi", outputTime, (outputSteppingDuration + 500) / 1000));
-				results.add(new QuantimodoMeasurement("Accupedo", "Walk/Run Distance", "Physical Activity", "SUM", outputTime, outputDistance, "steps"));
 				//results.add(new QuantimodoMeasurement("Accupedo", "activity", "calories burned", false, false, true, outputCalories, "kcal", outputTime, (outputSteppingDuration + 500) / 1000));
-				results.add(new QuantimodoMeasurement("Accupedo", "Calories Burned", "Physical Activity", "SUM", outputTime, outputCalories, "steps"));
 			}
 
 			lastStepCount = stepCount;
@@ -128,6 +133,23 @@ public class AccupedoConverter implements Converter
 			lastDay = day;
 		}
 
-		return results.toArray(EMPTY_RESULT);
+		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(4);
+		if(stepGoalMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Daily Step Count Goal Reached", "Goals", "count", MeasurementSet.COMBINE_SUM, "Accupedo", stepGoalMeasurements));
+		}
+		if(stepsMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Steps", "Physical Activity", "steps", MeasurementSet.COMBINE_SUM, "Accupedo", stepsMeasurements));
+		}
+		if(distanceMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Walk/Run Distance", "Goals", "count", MeasurementSet.COMBINE_SUM, "Accupedo", distanceMeasurements));
+		}
+		if(caloriesMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Walk/Run Distance", "Goals", "count", MeasurementSet.COMBINE_SUM, "Accupedo", caloriesMeasurements));
+		}
+		return measurementSets;
 	}
 }

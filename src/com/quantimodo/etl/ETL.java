@@ -1,9 +1,10 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class ETL
 {
@@ -19,22 +20,22 @@ public class ETL
 			MyFitnessPalConverter.instance
 	};
 
-	public QuantimodoMeasurement[] handle(final String filename) throws IOException
+	public ArrayList<MeasurementSet> handle(final String filename) throws IOException
 	{
 		return handle(new File(filename), false);
 	}
 
-	public QuantimodoMeasurement[] handle(final String filename, final boolean debugPrinting) throws IOException
+	public ArrayList<MeasurementSet> handle(final String filename, final boolean debugPrinting) throws IOException
 	{
 		return handle(new File(filename), debugPrinting);
 	}
 
-	public QuantimodoMeasurement[] handle(final File file) throws IOException
+	public ArrayList<MeasurementSet> handle(final File file) throws IOException
 	{
 		return handle(file, false);
 	}
 
-	public QuantimodoMeasurement[] handle(final File file, final boolean debugPrinting) throws IOException
+	public ArrayList<MeasurementSet> handle(final File file, final boolean debugPrinting) throws IOException
 	{
 		if (file == null)
 		{
@@ -45,11 +46,11 @@ public class ETL
 		final DatabaseView database;
 		{
 			DatabaseView db = null;
-			for (int i = 0; i < readers.length; i++)
+			for (Reader reader : readers)
 			{
 				try
 				{
-					db = readers[i].getDatabaseView(file);
+					db = reader.getDatabaseView(file);
 					if (db != null)
 					{
 						break;
@@ -57,7 +58,7 @@ public class ETL
 				}
 				catch (final IOException e)
 				{
-					if (readers[i] == SQLiteReader.instance)
+					if (reader == SQLiteReader.instance)
 					{
 						throw e;
 					}
@@ -76,12 +77,12 @@ public class ETL
 		// System.out.println(java.util.Arrays.toString((byte []) database.getTable("records").getData(0, "recordData")));
 
 		// Convert records
-		final QuantimodoMeasurement[] outputRecords;
+		final ArrayList<MeasurementSet> outputRecords;
 		{
-			QuantimodoMeasurement[] recs = null;
-			for (int i = 0; i < converters.length; i++)
+			ArrayList<MeasurementSet> recs = null;
+			for (Converter converter : converters)
 			{
-				recs = converters[i].convert(database);
+				recs = converter.convert(database);
 				if (recs != null)
 				{
 					break;
@@ -95,7 +96,7 @@ public class ETL
 		}
 		if (debugPrinting)
 		{
-			for (final QuantimodoMeasurement outputRecord : outputRecords)
+			for (final MeasurementSet outputRecord : outputRecords)
 			{
 				System.out.println(outputRecord);
 			}

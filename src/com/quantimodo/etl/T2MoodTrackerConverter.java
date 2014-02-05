@@ -1,7 +1,9 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,14 +11,19 @@ public class T2MoodTrackerConverter implements Converter
 {
 	public static final T2MoodTrackerConverter instance = new T2MoodTrackerConverter();
 
-
 	private T2MoodTrackerConverter()
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("scale")) || (!databaseView.hasTable("result")))
+		{
+			return null;
+		}
+
+		final Table table = databaseView.getTable("result");
+		if ((!table.hasField("scale_id")) || (!table.hasField("timestamp")) || (!table.hasField("value")))
 		{
 			return null;
 		}
@@ -37,26 +44,21 @@ public class T2MoodTrackerConverter implements Converter
 			}
 		}
 
-		final Table table = databaseView.getTable("result");
-		if ((!table.hasField("scale_id")) || (!table.hasField("timestamp")) || (!table.hasField("value")))
-		{
-			return null;
-		}
-
 		final int recordCount = table.getRecordCount();
-		final QuantimodoMeasurement[] result = new QuantimodoMeasurement[recordCount];
+		ArrayList<Measurement> measurements = new ArrayList<Measurement>(recordCount);
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
 			final long scaleID = ((Number) table.getData(recordNumber, "scale_id")).longValue();
 
-			final String name = scaleNames.get(scaleID);
+			final String name = scaleNames.get(scaleID);    //TODO Track other aspects individually just like "How Are You Feeling" converter
 			final byte value = ((Number) table.getData(recordNumber, "value")).byteValue();
-			final long timestamp = ((Number) table.getData(recordNumber, "timestamp")).longValue();
+			final long timestamp = ((Number) table.getData(recordNumber, "timestamp")).longValue() / 1000;
 
-			//result[recordNumber] = new QuantimodoMeasurement("T2 Mood Tracker", "mood", name, false, false, false, value, "out of 100", time, 0);
-			result[recordNumber] = new QuantimodoMeasurement("T2 Mood Tracker", "Overall Mood", "Mood", "MEAN", timestamp, value, "%");
+			measurements.add(new Measurement(timestamp, value));
 		}
 
-		return result;
+		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(1);
+		measurementSets.add(new MeasurementSet("Overall Mood", "Mood", "%", MeasurementSet.COMBINE_MEAN, "T2 Mood Tracker"));
+		return measurementSets;
 	}
 }

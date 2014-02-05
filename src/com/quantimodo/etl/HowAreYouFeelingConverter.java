@@ -1,7 +1,9 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,13 +11,11 @@ public class HowAreYouFeelingConverter implements Converter
 {
 	public static final HowAreYouFeelingConverter instance = new HowAreYouFeelingConverter();
 
-	private static final QuantimodoMeasurement[] EMPTY_RESULT = new QuantimodoMeasurement[0];
-
 	private HowAreYouFeelingConverter()
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("buttonconfiguration")) || (!databaseView.hasTable("buttonconfigurationlevel")) || (!databaseView.hasTable("feelinghistory")))
 		{
@@ -78,17 +78,30 @@ public class HowAreYouFeelingConverter implements Converter
 		}
 
 		final int recordCount = feelings.getRecordCount();
-		final QuantimodoMeasurement[] results = new QuantimodoMeasurement[recordCount];
+
+		HashMap<String, MeasurementSet> measurementSets = new HashMap<String, MeasurementSet>();
 
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
 			final int buttonID = (Integer) feelings.getData(recordNumber, "levelid");
-			final long timestamp = (Long) feelings.getData(recordNumber, "time");
+			final long timestamp = (Long) feelings.getData(recordNumber, "time") / 1000;
 
-			//results[recordNumber] = new QuantimodoMeasurement("How Are You Feeling?", "mood", buttonScaleName.get(buttonID), true, false, false, buttonValue.get(buttonID), buttonUnit.get(buttonID), timestamp, 0);
-			results[recordNumber] = new QuantimodoMeasurement("How Are You Feeling", buttonScaleName.get(buttonID), "Mood", "MEAN", timestamp, buttonValue.get(buttonID), buttonUnit.get(buttonID));
+			//TODO try to standardize rating types so that they match existing variables in the quantimodo database
+			String ratingType = buttonScaleName.get(buttonID);
+			String unit = buttonScaleName.get(buttonID);
+
+			if(!measurementSets.containsKey(ratingType + unit))
+			{
+				MeasurementSet newSet = new MeasurementSet(ratingType, "Mood", unit, MeasurementSet.COMBINE_MEAN, "How Are You Feeling");
+				newSet.measurements.add(new Measurement(timestamp, buttonValue.get(buttonID)));
+				measurementSets.put(ratingType + unit, newSet);
+			}
+			else
+			{
+				measurementSets.get(ratingType + unit).measurements.add(new Measurement(timestamp, buttonValue.get(buttonID)));
+			}
 		}
 
-		return results;
+		return new ArrayList<MeasurementSet>(measurementSets.values());
 	}
 }

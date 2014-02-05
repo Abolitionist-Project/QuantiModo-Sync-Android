@@ -1,6 +1,10 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CallRecorderConverter implements Converter
 {
@@ -12,7 +16,7 @@ public class CallRecorderConverter implements Converter
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if (databaseView == null)
 		{
@@ -34,11 +38,11 @@ public class CallRecorderConverter implements Converter
 		}
 
 		final int recordCount = table.getRecordCount();
-		final QuantimodoMeasurement[] result = new QuantimodoMeasurement[recordCount];
+		final HashMap<String, MeasurementSet> measurementSets = new HashMap<String, MeasurementSet>();
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
 			final String phoneNumber = (String) table.getData(recordNumber, "PhoneNumber");
-			final long timestamp = ((Number) table.getData(recordNumber, "Date")).longValue();
+			final long timestamp = ((Number) table.getData(recordNumber, "Date")).longValue() / 1000;
 			final int duration;
 			try
 			{
@@ -53,10 +57,22 @@ public class CallRecorderConverter implements Converter
 			{
 				return null;
 			}
-			result[recordNumber] = new QuantimodoMeasurement("Call Recorder", "Telephone Call With " + phoneNumber, "Social Interactions", "SUM", timestamp, duration, "s");
+
+			if(!measurementSets.containsKey(phoneNumber))
+			{
+				MeasurementSet newSet = new MeasurementSet("Telephone Call With " + phoneNumber, "Social Interactions", "s", MeasurementSet.COMBINE_SUM, "Call Recorder");
+				newSet.measurements.add(new Measurement(timestamp, duration, duration));
+				measurementSets.put(phoneNumber, newSet);
+			}
+			else
+			{
+				measurementSets.get(phoneNumber).measurements.add(new Measurement(timestamp, duration, duration));
+			}
+
 			//result[recordNumber] = new QuantimodoMeasurement("Call Recorder", "telephone call", "telephone call with " + phoneNumber, true, true, true, duration, "s", timestamp, duration);
 		}
 
-		return result;
+		// Convert the hashmap to an arraylist and return it
+		return new ArrayList<MeasurementSet>(measurementSets.values());
 	}
 }

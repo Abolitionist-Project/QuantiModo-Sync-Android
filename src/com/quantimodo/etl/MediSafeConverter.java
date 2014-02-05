@@ -1,10 +1,10 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MediSafeConverter implements Converter
@@ -12,13 +12,12 @@ public class MediSafeConverter implements Converter
 	public static final MediSafeConverter instance = new MediSafeConverter();
 
 	private static final String[] unitTypes = new String[]{"pills", "cc", "mL", "g", "mg", "drops", "pieces", "squeezes", "units"};
-	private static final QuantimodoMeasurement[] EMPTY_RESULT = new QuantimodoMeasurement[0];
 
 	private MediSafeConverter()
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("medicine")) || (!databaseView.hasTable("schedulegroup")) || (!databaseView.hasTable("schedule")))
 		{
@@ -76,30 +75,40 @@ public class MediSafeConverter implements Converter
 		final int recordCount = table.getRecordCount();
 		if (recordCount == 0)
 		{
-			return EMPTY_RESULT;
+			return new ArrayList<MeasurementSet>(0);
 		}
 
-		final List<QuantimodoMeasurement> result = new ArrayList<QuantimodoMeasurement>(recordCount);
+		HashMap<String, MeasurementSet> measurementSets = new HashMap<String, MeasurementSet>();
+
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
-			if ("taken".equals((String) table.getData(recordNumber, "status")))
+			if ("taken".equals(table.getData(recordNumber, "status")))
 			{
 				final int id = ((Number) table.getData(recordNumber, "group_id")).intValue();
 
-				final String name = prescriptionNames.get(id);
-				final double dose = prescriptionDoses.get(id);
-				final String unit = prescriptionUnits.get(id);
-				final Long timestamp = ParseUtil.parseNanoTime((String) table.getData(recordNumber, "actualDateTime"));
+				String name = prescriptionNames.get(id);
+				double dose = prescriptionDoses.get(id);
+				String unit = prescriptionUnits.get(id);
+				Long timestamp = ParseUtil.parseNanoTime((String) table.getData(recordNumber, "actualDateTime"));
 				if (timestamp == null)
 				{
 					return null;
 				}
+				timestamp = timestamp / 1000;
 
-				//result.add(new QuantimodoMeasurement("MediSafe", "medicine", name, true, true, true, dose, unit, timestamp, 0));
-				result.add(new QuantimodoMeasurement("MediSafe", name, "Medications", "SUM", timestamp, dose, unit));
+				if(!measurementSets.containsKey(name + unit))
+				{
+					MeasurementSet newSet = new MeasurementSet(name, "Social Interactions", "s", MeasurementSet.COMBINE_SUM, "MediSafe");
+					newSet.measurements.add(new Measurement(timestamp, dose));
+					measurementSets.put(name + unit, newSet);
+				}
+				else
+				{
+					measurementSets.get(name + unit).measurements.add(new Measurement(timestamp, dose));
+				}
 			}
 		}
 
-		return result.toArray(EMPTY_RESULT);
+		return new ArrayList<MeasurementSet>(measurementSets.values());
 	}
 }

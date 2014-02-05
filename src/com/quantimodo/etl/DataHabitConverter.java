@@ -1,7 +1,9 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +18,7 @@ public class DataHabitConverter implements Converter
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("trackers")) || (!databaseView.hasTable("data")))
 		{
@@ -48,7 +50,8 @@ public class DataHabitConverter implements Converter
 		}
 
 		final int recordCount = table.getRecordCount();
-		final QuantimodoMeasurement[] result = new QuantimodoMeasurement[recordCount];
+		final HashMap<String, MeasurementSet> measurementSets = new HashMap<String, MeasurementSet>();
+
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
 			final long trackerID = ((Number) table.getData(recordNumber, "TrackerID")).longValue();
@@ -60,18 +63,28 @@ public class DataHabitConverter implements Converter
 			String combinationOperation;
 			if (summable[unitID])
 			{
-				combinationOperation = "SUM";
+				combinationOperation = MeasurementSet.COMBINE_SUM;
 			}
 			else
 			{
-				combinationOperation = "MEAN";
+				combinationOperation = MeasurementSet.COMBINE_MEAN;
 			}
-			final long timestamp = Long.parseLong((String) table.getData(recordNumber, "Timestamp"));
+			final long timestamp = Long.parseLong((String) table.getData(recordNumber, "Timestamp")) / 1000;
 
 			//result[recordNumber] = new QuantimodoMeasurement("DataHabit", "[Miscellaneous]", name, true, null, comb, value, unitName, timestamp, 0);
-			result[recordNumber] = new QuantimodoMeasurement("DataHabit", name, "[Miscellaneous]", combinationOperation, timestamp, value, unitName);
+
+			if(!measurementSets.containsKey(name + unitName))
+			{
+				MeasurementSet newSet = new MeasurementSet(name, "Miscellaneous", unitName, combinationOperation, "DataHabit");
+				newSet.measurements.add(new Measurement(timestamp, value));
+				measurementSets.put(name + unitName, newSet);
+			}
+			else
+			{
+				measurementSets.get(name + unitName).measurements.add(new Measurement(timestamp, value));
+			}
 		}
 
-		return result;
+		return new ArrayList<MeasurementSet>(measurementSets.values());
 	}
 }

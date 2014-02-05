@@ -1,9 +1,11 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.MeasurementSet;
+
+import java.util.ArrayList;
 
 public interface Converter
 {
-	QuantimodoMeasurement[] convert(DatabaseView databaseView);
+	ArrayList<MeasurementSet> convert(DatabaseView databaseView);
 }
 

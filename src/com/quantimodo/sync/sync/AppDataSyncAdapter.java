@@ -8,7 +8,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import com.quantimodo.etl.ETL;
 import com.quantimodo.sdk.QuantimodoClient;
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.Log;
 import com.quantimodo.sync.databases.QuantiSyncDbHelper;
@@ -20,10 +21,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 {
@@ -103,7 +101,8 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 
 	private void sync(ArrayList<ApplicationData> syncingApps)
 	{
-		List<QuantimodoMeasurement> newOrUpdatedData = new ArrayList<QuantimodoMeasurement>();
+		ArrayList<MeasurementSet> allNewData = new ArrayList<MeasurementSet>();
+
 		List<HistoryThing> historyThings = new ArrayList<HistoryThing>();
 
 		Process suProcess = SU.startProcess();  // Start an elevated process
@@ -124,14 +123,14 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 				String filepath = cachePath + "/" + currentApp.packageName + "-" + currentApp.dataFile.getName();
 				cacheFile = new File(filepath);
 
-				List<QuantimodoMeasurement> oldData = null;
-				List<QuantimodoMeasurement> newData;
+				ArrayList<MeasurementSet> oldData = null;
+				ArrayList<MeasurementSet> newData;
 				if (cacheFile.exists())
 				{
 					Log.i(currentApp.packageName + ": Extracting old data");
-					oldData = Arrays.asList(etl.handle(cacheFile));
+					oldData = etl.handle(cacheFile);
 
-					Log.i(currentApp.packageName + " Read " + oldData.size() + " old records");
+					Log.i(currentApp.packageName + " Read " + oldData.size() + " old measurement sets");
 				}
 				else
 				{
@@ -144,48 +143,30 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 				if (cacheFile.exists())
 				{
 					Log.i(currentApp.packageName + ": Extracting new data");
-					newData = Arrays.asList(etl.handle(cacheFile));
+					newData = etl.handle(cacheFile);
 
-					Log.i(currentApp.packageName + " Read " + newData.size() + " new records");
+					Log.i(currentApp.packageName + " Read " + newData.size() + " new measurement sets");
 				}
 				else
 				{
 					Log.i(currentApp.packageName + ": No file cached, no data to sync");
-					historyThings.add(new HistoryThing(currentApp.packageName, currentApp.label, new Date(), newOrUpdatedData.size(), "Couldn't cache application data"));
+					historyThings.add(new HistoryThing(currentApp.packageName, currentApp.label, new Date(), 0, "Couldn't cache application data"));
 					return;
 				}
 
-				if (oldData == null)
-				{
-					newOrUpdatedData.addAll(newData);
-				}
-				else
-				{
-					Log.i(currentApp.packageName + ": Comparing new and old data");
-					for (QuantimodoMeasurement newRecord : newData)
-					{
-						boolean contains = false;
-						for (QuantimodoMeasurement oldRecord : oldData)
-						{
-							if (newRecord.timestamp == oldRecord.timestamp && newRecord.variable.equals(oldRecord.variable))
-							{
-								contains = true;
-								if (newRecord.value != oldRecord.value)
-								{
-									newOrUpdatedData.add(newRecord);
-								}
-								break;
-							}
-						}
+				Log.i(currentApp.packageName + ": Comparing new and old data");
 
-						if (!contains)
-						{
-							newOrUpdatedData.add(newRecord);
-						}
-					}
+				newData = getNewData(newData, oldData);
+				allNewData.addAll(newData);
+
+				int totalNewMeasurements = 0;
+				for(MeasurementSet filteredSet : newData)
+				{
+					totalNewMeasurements += filteredSet.measurements.size();
 				}
 
-				historyThings.add(new HistoryThing(currentApp.packageName, currentApp.label, new Date(), newOrUpdatedData.size(), null));
+				Log.i(currentApp.packageName + ": New measurements: " + totalNewMeasurements + " across " + newData.size() + " sets");
+				historyThings.add(new HistoryThing(currentApp.packageName, currentApp.label, new Date(), totalNewMeasurements, null));
 			}
 			catch (Exception e)
 			{
@@ -196,16 +177,16 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 					Log.i("Deleted cache file: " + cacheFile.getPath() + ", result: " + deletedFile);
 				}
 
-				historyThings.add(new HistoryThing(currentApp.packageName, currentApp.label, new Date(), newOrUpdatedData.size(), e.getMessage()));
+				historyThings.add(new HistoryThing(currentApp.packageName, currentApp.label, new Date(), 0, e.getMessage()));
 			}
 		}
 
 		SU.stopProcess(suProcess, false);
 
-		if (newOrUpdatedData.size() > 0)
+		if (allNewData.size() > 0)
 		{
 			QuantimodoClient qmClient = QuantimodoClient.getInstance();
-			int syncState = qmClient.putMeasurementsSynchronous(context, authToken, newOrUpdatedData);
+			int syncState = qmClient.putMeasurementsSynchronous(context, authToken, allNewData);
 
 			//TODO get proper error messages
 			if(syncState < 0)
@@ -217,9 +198,89 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 				saveHistory(historyThings, null);
 			}
 		}
+		else
+		{
+			saveHistory(historyThings, null);
+		}
 
 		SharedPreferences prefs = context.getSharedPreferences("com.quantimodo.app_preferences", Context.MODE_MULTI_PROCESS);
 		prefs.edit().putLong("lastSuccessfulAppSync", System.currentTimeMillis()).commit();
+	}
+
+	/*
+	** Compares newData and oldData. Stores difference in newData
+	** @return  number of new measurements
+	*/
+	private ArrayList<MeasurementSet>  getNewData(ArrayList<MeasurementSet> newData, ArrayList<MeasurementSet> oldData)
+	{
+		if (oldData == null)
+		{
+			return newData;
+		}
+
+		long startTime = System.currentTimeMillis();
+
+		ArrayList<MeasurementSet> filteredNewData = new ArrayList<MeasurementSet>();
+		for (MeasurementSet newSet : newData)
+		{
+			boolean containsSet = false;
+			for (MeasurementSet oldSet : oldData)
+			{
+				// Check if the measurement sets match
+				if(newSet.name.equals(oldSet.name) && newSet.category.equals(oldSet.category) && newSet.unit.equals(oldSet.unit) && newSet.source.equals(oldSet.source))
+				{
+					containsSet = true;
+					Log.i("--Matched measurement set: " + newSet.name + ", unit: " + newSet.unit);
+					Log.i("New meas size: " + newSet.measurements.size());
+					Log.i("Old meas size: " + newSet.measurements.size());
+
+					ArrayList<Measurement> newMeasurements = new ArrayList<Measurement>();
+
+					// Loop through measurements to get the new ones
+					for(Measurement newMeasurement : newSet.measurements)
+					{
+						boolean containsMeasurement = false;
+						for(Measurement oldMeasurement : oldSet.measurements)
+						{
+							if(newMeasurement.timestamp == oldMeasurement.timestamp && newMeasurement.value == oldMeasurement.value)
+							{
+								containsMeasurement = true;
+								break;
+							}
+						}
+
+						if(!containsMeasurement)
+						{
+							newMeasurements.add(newMeasurement);
+						}
+					}
+
+					// If there are new measurements, add the new set + new measurements to the filtered list
+					if(newMeasurements.size() > 0)
+					{
+						Log.i("Done comparing this set, got " + newMeasurements.size() + " new measurements");
+						newSet.measurements = newMeasurements;
+						filteredNewData.add(newSet);
+					}
+					else
+					{
+						Log.i("Done comparing this set, no new measurements");
+					}
+
+					break;
+				}
+			}
+
+			if(!containsSet)
+			{
+				Log.i("Couldn't match measurement set: " + newSet.name + ", unit: " + newSet.unit + ". Adding set of " + newSet.measurements.size());
+				filteredNewData.add(newSet);
+			}
+		}
+
+		Log.i("Filtered in " + (System.currentTimeMillis() - startTime) + "ms");
+
+		return filteredNewData;
 	}
 
 	private void saveHistory(List<HistoryThing> historyThings, String syncError)

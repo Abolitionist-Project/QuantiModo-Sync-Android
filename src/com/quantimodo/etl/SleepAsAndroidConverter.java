@@ -1,6 +1,7 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
 import java.util.ArrayList;
 
@@ -14,7 +15,7 @@ public class SleepAsAndroidConverter implements Converter
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if (databaseView == null)
 		{
@@ -37,40 +38,64 @@ public class SleepAsAndroidConverter implements Converter
 
 		int recordCount = table.getRecordCount();
 
-		ArrayList<QuantimodoMeasurement> measurements = new ArrayList<QuantimodoMeasurement>(recordCount * 2);
+		ArrayList<Measurement> durationMeasurements = new ArrayList<Measurement>(recordCount);
+		ArrayList<Measurement> cyclesMeasurements = new ArrayList<Measurement>(recordCount);
+		ArrayList<Measurement> noiseMeasurements = new ArrayList<Measurement>(recordCount);
+		ArrayList<Measurement> ratingMeasurements = new ArrayList<Measurement>(recordCount);
+		ArrayList<Measurement> qualityMeasurements = new ArrayList<Measurement>(recordCount);
+
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
-			long startTime = ((Number) table.getData(recordNumber, "startTime")).longValue();
-			long toTime = ((Number) table.getData(recordNumber, "toTime")).longValue();
+			long startTime = ((Number) table.getData(recordNumber, "startTime")).longValue() / 1000;
+			long toTime = ((Number) table.getData(recordNumber, "toTime")).longValue() / 1000;
 
 			int rating = ((Number) table.getData(recordNumber, "rating")).intValue();
 			int cycles = ((Number) table.getData(recordNumber, "cycles")).intValue();
 			double noise = ((Number) table.getData(recordNumber, "noiseLevel")).doubleValue();
 			double quality = ((Number) table.getData(recordNumber, "quality")).doubleValue();
 
-			long duration = toTime - startTime;
-			float durationMinutes = (duration / 1000) / 60;
+			int duration = (int) (toTime - startTime);
+			float durationMinutes = duration / 60;
 
-			//measurements.add(new QuantimodoMeasurement("Sleep as Android", "Bedtime", "Sleep", "SUM", startTime, startTime / 1000, "epoch"));
-			//measurements.add(new QuantimodoMeasurement("Sleep as Android", "Wakeup Time", "Sleep", "SUM", toTime, toTime / 1000, "epoch"));
-
-			measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Duration", "Sleep", "SUM", toTime, durationMinutes, "min"));
-			measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Cycles", "Sleep", "MEAN", toTime, cycles, "event"));
+			durationMeasurements.add(new Measurement(toTime, durationMinutes, duration));
+			cyclesMeasurements.add(new Measurement(toTime, cycles));
 
 			if(noise >= 0 && noise <= 1)
 			{
-				measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Noise Level", "Sleep", "MEAN", toTime, noise, "/1"));
+				noiseMeasurements.add(new Measurement(toTime, noise));
 			}
 			if(rating >= 0 && rating <= 5)
 			{
-				measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Rating", "Sleep", "MEAN", toTime, rating, "/6"));
+				ratingMeasurements.add(new Measurement(toTime, rating));
 			}
 			if(quality >= 0 && quality <= 1)
 			{
-				measurements.add(new QuantimodoMeasurement("Sleep as Android", "Sleep Quality", "Sleep", "MEAN", toTime, quality, "/1"));
+				qualityMeasurements.add(new Measurement(toTime, quality));
 			}
 		}
 
-		return measurements.toArray(new QuantimodoMeasurement[measurements.size()]);
+		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(5);
+		if(durationMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Sleep Duration", "Sleep", "min", MeasurementSet.COMBINE_SUM, "Sleep as Android", durationMeasurements));
+		}
+		if(cyclesMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Sleep Cycles", "Sleep", "event", MeasurementSet.COMBINE_SUM, "Sleep as Android", cyclesMeasurements));
+		}
+		if(noiseMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Sleep Noise Level", "Sleep", "/1", MeasurementSet.COMBINE_MEAN, "Sleep as Android", noiseMeasurements));
+		}
+		if(ratingMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Sleep Rating", "Sleep", "/6", MeasurementSet.COMBINE_MEAN, "Sleep as Android", ratingMeasurements));
+		}
+		if(qualityMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Sleep Quality", "Sleep", "/1", MeasurementSet.COMBINE_MEAN, "Sleep as Android", qualityMeasurements));
+		}
+
+		return measurementSets;
 	}
 }

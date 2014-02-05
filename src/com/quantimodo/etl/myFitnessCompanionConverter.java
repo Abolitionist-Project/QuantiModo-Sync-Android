@@ -1,7 +1,9 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 public class myFitnessCompanionConverter implements Converter
@@ -12,7 +14,7 @@ public class myFitnessCompanionConverter implements Converter
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("table_sensors")) || (!databaseView.hasTable("table_readings")))
 		{
@@ -37,7 +39,7 @@ public class myFitnessCompanionConverter implements Converter
 		}
 
 		final int recordCount = table.getRecordCount();
-		final QuantimodoMeasurement[] result = new QuantimodoMeasurement[recordCount];
+		final ArrayList<Measurement> measurements = new ArrayList<Measurement>(recordCount);
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
 			final double value = ((Number) table.getData(recordNumber, "reading2")).doubleValue();
@@ -48,12 +50,13 @@ public class myFitnessCompanionConverter implements Converter
 			final int minute = ((Number) table.getData(recordNumber, "minutes")).intValue();
 			final int second = ((Number) table.getData(recordNumber, "seconds")).intValue();
 
-			final long timestamp = (new GregorianCalendar(year, month - 1, day, hour, minute, second)).getTimeInMillis();
+			final long timestamp = (new GregorianCalendar(year, month - 1, day, hour, minute, second)).getTimeInMillis() / 1000;
 
-			//result[recordNumber] = new QuantimodoMeasurement("myFitnessCompanion", "vital sign", "heart rate", false, false, false, value, "bpm", (new GregorianCalendar(year, month - 1, day, hour, minute, second)).getTimeInMillis(), 0);
-			result[recordNumber] = new QuantimodoMeasurement("myFitnessCompanion", "Heart Rate", "Vital Signs", "MEAN", timestamp, value, "bpm");
+			measurements.add(new Measurement(timestamp, value));
 		}
 
-		return result;
+		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(1);
+		measurementSets.add(new MeasurementSet("Heart Rate", "Vital Signs", "bpm", MeasurementSet.COMBINE_MEAN, "myFitnessCompanion"));
+		return measurementSets;
 	}
 }

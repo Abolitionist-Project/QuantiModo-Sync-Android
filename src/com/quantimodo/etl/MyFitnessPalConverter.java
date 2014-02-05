@@ -1,7 +1,9 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +18,7 @@ public class MyFitnessPalConverter implements Converter
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("foods")) || (!databaseView.hasTable("food_entries")))
 		{
@@ -52,9 +54,8 @@ public class MyFitnessPalConverter implements Converter
 		calendar.clear(Calendar.MINUTE);
 		calendar.clear(Calendar.MILLISECOND);
 
-
 		final int recordCount = table.getRecordCount();
-		final QuantimodoMeasurement[] result = new QuantimodoMeasurement[recordCount];
+		final HashMap<String, MeasurementSet> measurementSets = new HashMap<String, MeasurementSet>();
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
 			final long foodsID = ((Number) table.getData(recordNumber, "food_id")).longValue();
@@ -79,12 +80,20 @@ public class MyFitnessPalConverter implements Converter
 			}
 
 			calendar.set(Integer.valueOf(dateString[0]), Integer.valueOf(dateString[1]),  Integer.valueOf(dateString[2]));
-			final long timestamp = calendar.getTimeInMillis();
+			final long timestamp = calendar.getTimeInMillis() / 1000;
 
-			//result[recordNumber] = new QuantimodoMeasurement("MyFitnessPal", "Medication", name, true, true, true, dose, unit, timestamp, 0);
-			result[recordNumber] = new QuantimodoMeasurement("MyFitnessPal", name, "Foods", "SUM", timestamp, dose, unit);
+			if(!measurementSets.containsKey(name + unit))
+			{
+				MeasurementSet newSet = new MeasurementSet(name, "Foods", unit, MeasurementSet.COMBINE_SUM, "MyFitnessPal");
+				newSet.measurements.add(new Measurement(timestamp, dose));
+				measurementSets.put(name + unit, newSet);
+			}
+			else
+			{
+				measurementSets.get(name + unit).measurements.add(new Measurement(timestamp, dose));
+			}
 		}
 
-		return result;
+		return new ArrayList<MeasurementSet>(measurementSets.values());
 	}
 }

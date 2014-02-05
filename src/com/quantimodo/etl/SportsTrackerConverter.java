@@ -1,22 +1,21 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SportsTrackerConverter implements Converter
 {
 	public static final SportsTrackerConverter instance = new SportsTrackerConverter();
 
 	private static final String[] REQUIRED_FIELD_NAMES = new String[]{"distance", "date_time", "duration", "bpm", "breathing_rate", "skin_temp"};
-	private static final QuantimodoMeasurement[] EMPTY_RESULT = new QuantimodoMeasurement[0];
 
 	private SportsTrackerConverter()
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("TrackPoint")))
 		{
@@ -35,10 +34,13 @@ public class SportsTrackerConverter implements Converter
 		final int recordCount = table.getRecordCount();
 		if (recordCount == 0)
 		{
-			return EMPTY_RESULT;
+			return new ArrayList<MeasurementSet>(0);
 		}
 
-		final List<QuantimodoMeasurement> results = new ArrayList<QuantimodoMeasurement>(4 * recordCount);
+		ArrayList<Measurement> distanceMeasurements = new ArrayList<Measurement>(recordCount);
+		ArrayList<Measurement> heartRateMeasurements = new ArrayList<Measurement>(recordCount);
+		ArrayList<Measurement> breathingRateMeasurements = new ArrayList<Measurement>(recordCount);
+		ArrayList<Measurement> temperatureMeasurements = new ArrayList<Measurement>(recordCount);
 
 		int lastTrackID = Integer.MIN_VALUE;
 		double lastDistance = 0.0;
@@ -54,7 +56,7 @@ public class SportsTrackerConverter implements Converter
 			final int heartRate = ((Number) table.getData(recordNumber, "bpm")).intValue();
 			final double breathingRate = ((Number) table.getData(recordNumber, "breathing_rate")).doubleValue();
 			final double skinTemperature = ((Number) table.getData(recordNumber, "skin_temp")).doubleValue();
-			final long timestamp = ((Number) table.getData(recordNumber, "date_time")).longValue();
+			final long timestamp = ((Number) table.getData(recordNumber, "date_time")).longValue() / 1000;  // Convert to seconds
 			final int duration = ((Number) table.getData(recordNumber, "duration")).intValue();
 
 			final long outputTime;
@@ -68,30 +70,26 @@ public class SportsTrackerConverter implements Converter
 			}
 			else
 			{
-				outputTime = timestamp - 1000 * duration;
+				outputTime = timestamp - duration;
 				outputDistance = distance;
 				outputDuration = duration;
 			}
 
-			if (outputDistance > 0.0)
+			if (outputDistance > 0)
 			{
-				results.add(new QuantimodoMeasurement("SportsTracker", "Walk/Run Distance", "Physical Activity", "SUM", outputTime, outputDistance, "m"));
-				//results.add(new QuantimodoMeasurement("SportsTracker", "activity", "walk/run distance", false, true, true, outputDistance, "m", outputTime, outputDuration));
+				distanceMeasurements.add(new Measurement(outputTime, outputDistance, outputDuration));
 			}
 			if (heartRate > 0)
 			{
-				results.add(new QuantimodoMeasurement("SportsTracker", "Heart Rate", "Vital Signs", "MEAN", outputTime, heartRate, "m"));
-				//results.add(new QuantimodoMeasurement("SportsTracker", "vital sign", "heart rate", false, false, false, heartRate, "bpm", outputTime, outputDuration));
+				distanceMeasurements.add(new Measurement(outputTime, heartRate, outputDuration));
 			}
-			if (breathingRate > 0.0)
+			if (breathingRate > 0)
 			{
-				results.add(new QuantimodoMeasurement("SportsTracker", "Breathing Rate", "Vital Signs", "MEAN", outputTime, breathingRate / 60.0, "Hz"));
-				//results.add(new QuantimodoMeasurement("SportsTracker", "vital sign", "breathing rate", false, false, false, breathingRate / 60.0, "Hz", outputTime, outputDuration));
+				distanceMeasurements.add(new Measurement(outputTime, breathingRate / 60.0, outputDuration));
 			}
-			if (skinTemperature > 0.0)
+			if (skinTemperature > 0)
 			{
-				results.add(new QuantimodoMeasurement("SportsTracker", "Temperature", "Vital Signs", "MEAN", outputTime, skinTemperature, "\u00b0C"));
-				//results.add(new QuantimodoMeasurement("SportsTracker", "vital sign", "temperature", false, false, false, skinTemperature, "\u00b0C", outputTime, outputDuration));
+				distanceMeasurements.add(new Measurement(outputTime, skinTemperature, outputDuration));
 			}
 
 			lastTrackID = trackID;
@@ -103,6 +101,23 @@ public class SportsTrackerConverter implements Converter
 			lastDuration = duration;
 		}
 
-		return results.toArray(EMPTY_RESULT);
+		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(4);
+		if(distanceMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Walk/Run Distance", "Physical Activity", "m", MeasurementSet.COMBINE_SUM, "SportsTracker", distanceMeasurements));
+		}
+		if(heartRateMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Heart Rate", "Vital Signs", "bpm", MeasurementSet.COMBINE_MEAN, "SportsTracker", heartRateMeasurements));
+		}
+		if(breathingRateMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Breathing Rate", "Vital Signs", "Hz", MeasurementSet.COMBINE_MEAN, "SportsTracker", breathingRateMeasurements));
+		}
+		if(temperatureMeasurements.size() != 0)
+		{
+			measurementSets.add(new MeasurementSet("Temperature", "Vital Signs", "°C", MeasurementSet.COMBINE_MEAN, "SportsTracker", temperatureMeasurements));
+		}
+		return measurementSets;
 	}
 }

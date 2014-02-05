@@ -1,20 +1,19 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 public class ZombiesRunConverter implements Converter
 {
 	public static final ZombiesRunConverter instance = new ZombiesRunConverter();
 
-	private static final SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
 	private ZombiesRunConverter()
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("runrecord")))
 		{
@@ -28,26 +27,33 @@ public class ZombiesRunConverter implements Converter
 		}
 
 		final int runCount = runs.getRecordCount();
-		final QuantimodoMeasurement[] results = new QuantimodoMeasurement[runCount];
+		ArrayList<Measurement> measurements = new ArrayList<Measurement>(runCount);
 
 		for (int runNumber = 0; runNumber < runCount; runNumber++)
 		{
 			final int distance = (Integer) runs.getData(runNumber, "distance");
-			final Long startTime = ParseUtil.parseNanoTime((String) runs.getData(runNumber, "started"));
+
+			Long startTime = ParseUtil.parseNanoTime((String) runs.getData(runNumber, "started"));
 			if (startTime == null)
 			{
 				return null;
 			}
-			final Long endTime = ParseUtil.parseNanoTime((String) runs.getData(runNumber, "ended"));
+			startTime = startTime / 1000;
+
+			Long endTime = ParseUtil.parseNanoTime((String) runs.getData(runNumber, "ended"));
 			if (endTime == null)
 			{
 				return null;
 			}
+			endTime = startTime / 1000;
 
-			//results[runNumber] = new QuantimodoMeasurement("Zombies, Run!", "activity", "walk/run distance", false, true, true, distance, "m", startTime, (int) ((endTime - startTime + 500) / 1000));
-			results[runNumber] = new QuantimodoMeasurement("Zombies, Run!", "Walk/Run Distance", "Physical Activity", "SUM", startTime, distance, "m");
+			int duration = (int) (endTime - startTime);
+
+			measurements.add(new Measurement(startTime, distance, duration));
 		}
 
-		return results;
+		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(1);
+		measurementSets.add(new MeasurementSet("Walk/Run Distance", "Physical Activity", "m", MeasurementSet.COMBINE_SUM, "Zombies, Run!"));
+		return measurementSets;
 	}
 }

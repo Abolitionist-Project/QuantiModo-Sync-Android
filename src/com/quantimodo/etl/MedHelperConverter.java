@@ -1,7 +1,9 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +17,7 @@ public class MedHelperConverter implements Converter
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if ((databaseView == null) || (!databaseView.hasTable("prescription")) || (!databaseView.hasTable("doselog")))
 		{
@@ -47,21 +49,28 @@ public class MedHelperConverter implements Converter
 		}
 
 		final int recordCount = table.getRecordCount();
-		final QuantimodoMeasurement[] result = new QuantimodoMeasurement[recordCount];
+		final HashMap<String, MeasurementSet> measurementSets = new HashMap<String, MeasurementSet>();
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
 			final long prescriptionID = ((Number) table.getData(recordNumber, "prescriptionid")).longValue();
 
 			String name = prescriptionNames.get(prescriptionID);
+			double dose = ((Number) table.getData(recordNumber, "actualdosage")).doubleValue();
+			String unit = prescriptionUnits.get(prescriptionID);
+			long timestamp = ((Number) table.getData(recordNumber, "actualtime")).longValue() / 1000;
 
-			final double dose = ((Number) table.getData(recordNumber, "actualdosage")).doubleValue();
-			final String unit = prescriptionUnits.get(prescriptionID);
-			final long timestamp = ((Number) table.getData(recordNumber, "actualtime")).longValue();
-
-			//result[recordNumber] = new QuantimodoMeasurement("Med Helper", "Medication", name, true, true, true, dose, unit, timestamp, 0);
-			result[recordNumber] = new QuantimodoMeasurement("Med Helper", name, "Medications", "SUM", timestamp, dose, unit);
+			if(!measurementSets.containsKey(name + unit))
+			{
+				MeasurementSet newSet = new MeasurementSet(name, "Medications", unit, MeasurementSet.COMBINE_MEAN, "Med Helper");
+				newSet.measurements.add(new Measurement(timestamp, dose));
+				measurementSets.put(name + unit, newSet);
+			}
+			else
+			{
+				measurementSets.get(name + unit).measurements.add(new Measurement(timestamp, dose));
+			}
 		}
 
-		return result;
+		return new ArrayList<MeasurementSet>(measurementSets.values());
 	}
 }

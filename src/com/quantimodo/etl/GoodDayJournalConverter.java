@@ -1,7 +1,9 @@
 package com.quantimodo.etl;
 
-import com.quantimodo.sdk.model.QuantimodoMeasurement;
+import com.quantimodo.sdk.model.Measurement;
+import com.quantimodo.sdk.model.MeasurementSet;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 public class GoodDayJournalConverter implements Converter
@@ -14,7 +16,7 @@ public class GoodDayJournalConverter implements Converter
 	{
 	}
 
-	public QuantimodoMeasurement[] convert(final DatabaseView databaseView)
+	public ArrayList<MeasurementSet> convert(final DatabaseView databaseView)
 	{
 		if (databaseView == null)
 		{
@@ -36,7 +38,7 @@ public class GoodDayJournalConverter implements Converter
 		}
 
 		final int recordCount = table.getRecordCount();
-		final QuantimodoMeasurement[] result = new QuantimodoMeasurement[recordCount];
+		final ArrayList<Measurement> measurements = new ArrayList<Measurement>(recordCount);
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
 			final int year = ((Number) table.getData(recordNumber, "year")).intValue();
@@ -44,12 +46,14 @@ public class GoodDayJournalConverter implements Converter
 			final int day = ((Number) table.getData(recordNumber, "day")).intValue();
 			final double rating = ((Number) table.getData(recordNumber, "rating")).doubleValue();
 
-			final long timestamp = (new GregorianCalendar(year, month - 1, day)).getTimeInMillis();
+			final long timestamp = (new GregorianCalendar(year, month - 1, day)).getTimeInMillis() / 1000;
 
 			//result[recordNumber] = new QuantimodoMeasurement("Good Day Journal", "mood", "mood", false, false, false, rating, "out of 5", timestamp, 86400);
-			result[recordNumber] = new QuantimodoMeasurement("Good Day Journal", "Overall Mood", "Mood", "MEAN", timestamp, rating, "/5");
+			measurements.add(new Measurement(timestamp, rating));
 		}
 
-		return result;
+		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(1);
+		measurementSets.add(new MeasurementSet("Overall Mood", "Mood", "/5", MeasurementSet.COMBINE_MEAN, "Good Day Journal", measurements));
+		return measurementSets;
 	}
 }
