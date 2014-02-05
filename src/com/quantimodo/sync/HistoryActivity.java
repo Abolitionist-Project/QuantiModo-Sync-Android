@@ -82,7 +82,7 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 			int timestampColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.TIMESTAMP);
 			int syncCountColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.SYNCCOUNT);
 			int syncErrorColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.SYNCERROR);
-			for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext())
+			for(cursor.moveToLast(); !cursor.isBeforeFirst(); cursor.moveToPrevious())
 			{
 				historyItems.add(
 						new HistoryThing(cursor.getString(packageNameColumn),
