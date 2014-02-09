@@ -79,7 +79,7 @@ public class MyFitnessPalConverter implements Converter
 				  break;
 			}
 
-			calendar.set(Integer.valueOf(dateString[0]), Integer.valueOf(dateString[1]),  Integer.valueOf(dateString[2]));
+			calendar.set(Integer.valueOf(dateString[0]), Integer.valueOf(dateString[1]) - 1,  Integer.valueOf(dateString[2]));
 			final long timestamp = calendar.getTimeInMillis() / 1000;
 
 			if(!measurementSets.containsKey(name + unit))
