@@ -42,16 +42,16 @@ public class HowAreYouFeelingConverter implements Converter
 			final int buttonCount = buttons.getRecordCount();
 			for (int scaleNumber = 0; scaleNumber < scaleCount; scaleNumber++)
 			{
-				final int scaleID = (Integer) scales.getData(scaleNumber, "id");
+				final int scaleID = ((Number) scales.getData(scaleNumber, "id")).intValue();
 				final String scaleName = (String) scales.getData(scaleNumber, "selectionlabel");
 
 				int scaleLow = Integer.MAX_VALUE;
 				int scaleHigh = Integer.MIN_VALUE;
 				for (int buttonNumber = 0; buttonNumber < buttonCount; buttonNumber++)
 				{
-					if (scaleID == ((Integer) buttons.getData(buttonNumber, "configurationid")))
+					if (scaleID == ((Number) buttons.getData(buttonNumber, "configurationid")).intValue())
 					{
-						int value = (Integer) buttons.getData(buttonNumber, "value");
+						int value = ((Number) buttons.getData(buttonNumber, "value")).intValue();
 						buttonValue.put(buttonNumber, value);
 						buttonScaleName.put(buttonNumber, scaleName);
 
@@ -63,7 +63,7 @@ public class HowAreYouFeelingConverter implements Converter
 				final String unit = scaleLow + " to " + scaleHigh;
 				for (int buttonNumber = 0; buttonNumber < buttonCount; buttonNumber++)
 				{
-					if (scaleID == ((Integer) buttons.getData(buttonNumber, "configurationid")))
+					if (scaleID == ((Number) buttons.getData(buttonNumber, "configurationid")).intValue())
 					{
 						buttonUnit.put(buttonNumber, unit);
 					}
@@ -83,22 +83,22 @@ public class HowAreYouFeelingConverter implements Converter
 
 		for (int recordNumber = 0; recordNumber < recordCount; recordNumber++)
 		{
-			final int buttonID = (Integer) feelings.getData(recordNumber, "levelid");
+			final int buttonID = ((Number) feelings.getData(recordNumber, "levelid")).intValue();
 			final long timestamp = (Long) feelings.getData(recordNumber, "time") / 1000;
 
 			//TODO try to standardize rating types so that they match existing variables in the quantimodo database
 			String ratingType = buttonScaleName.get(buttonID);
-			String unit = buttonScaleName.get(buttonID);
+			String unit = buttonUnit.get(buttonID);
 
 			if(!measurementSets.containsKey(ratingType + unit))
 			{
-				MeasurementSet newSet = new MeasurementSet(ratingType, "Mood", unit, MeasurementSet.COMBINE_MEAN, "How Are You Feeling");
-				newSet.measurements.add(new Measurement(timestamp, buttonValue.get(buttonID)));
+				MeasurementSet newSet = new MeasurementSet(ratingType, "Mood", unit, MeasurementSet.COMBINE_MEAN, "How Are You Feeling?");
+				newSet.measurements.add(new Measurement(timestamp, ((Number)buttonValue.get(buttonID)).doubleValue()));
 				measurementSets.put(ratingType + unit, newSet);
 			}
 			else
 			{
-				measurementSets.get(ratingType + unit).measurements.add(new Measurement(timestamp, buttonValue.get(buttonID)));
+				measurementSets.get(ratingType + unit).measurements.add(new Measurement(timestamp, ((Number)buttonValue.get(buttonID)).doubleValue()));
 			}
 		}
 
