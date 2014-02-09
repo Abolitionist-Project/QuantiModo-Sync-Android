@@ -17,7 +17,6 @@
 
     <style name="Default.ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/actionbar_background</item>
-        <item name="android:icon">@drawable/ic_action_appicon</item>
     </style>
 
 
