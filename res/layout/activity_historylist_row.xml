@@ -6,11 +6,16 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="75dp" >
+        android:layout_height="wrap_content" >
+
+        <View
+            android:id="@+id/vwIndicator"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"/>
 
         <ImageButton
-            android:id="@+id/imgAppIcon"
-            android:layout_width="65dp"
+            android:id="@+id/imAppIcon"
+            android:layout_width="70dp"
             android:layout_height="match_parent"
             android:background="@drawable/selector"
             android:clickable="false"
@@ -24,46 +29,35 @@
             android:padding="8dp" >
 
             <TextView
-                android:id="@+id/tvLabel"
+                android:id="@+id/tvAppLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
                 android:paddingLeft="5dp"
+                android:paddingBottom="2dp"
                 android:singleLine="true"
                 android:textColor="@color/text_title"
-                android:textSize="18sp" />
+                android:textSize="19sp" />
 
             <TextView
-                android:id="@+id/tvSyncCnt"
+                android:id="@+id/tvSyncDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingBottom="2dp"
+                android:singleLine="true"
+                android:textColor="@color/text_subtitle"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvSyncDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="5dp"
                 android:singleLine="true"
                 android:textColor="@color/text_subtitle"
                 android:textSize="14sp" />
-
         </LinearLayout>
-
-        <View
-            android:id="@+id/View"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/separator" />
-
-        <TextView
-            android:id="@+id/tvSyncState"
-            android:layout_width="70dp"
-            android:layout_height="match_parent"
-            android:fontFamily="sans-serif-light"
-            android:gravity="center"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:singleLine="true"
-            android:textColor="@color/text_title"
-            android:textSize="14sp"
-            android:textStyle="bold" />
 
     </LinearLayout>
 

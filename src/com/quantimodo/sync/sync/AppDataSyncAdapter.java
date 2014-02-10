@@ -14,7 +14,7 @@ import com.quantimodo.sync.Global;
 import com.quantimodo.sync.Log;
 import com.quantimodo.sync.databases.QuantiSyncDbHelper;
 import com.quantimodo.sync.model.ApplicationData;
-import com.quantimodo.sync.model.HistoryThing;
+import com.quantimodo.sync.model.HistoryItem;
 import com.quantimodo.sync.su.SU;
 
 import java.io.BufferedReader;
@@ -103,7 +103,7 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		ArrayList<MeasurementSet> allNewData = new ArrayList<MeasurementSet>();
 
-		List<HistoryThing> historyThings = new ArrayList<HistoryThing>();
+		List<HistoryItem> historyItems = new ArrayList<HistoryItem>();
 
 		Process suProcess = SU.startProcess();  // Start an elevated process
 		DataOutputStream outputS = new DataOutputStream(suProcess.getOutputStream());
@@ -150,7 +150,7 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 				else
 				{
 					Log.i(currentApp.packageName + ": No file cached, no data to sync");
-					historyThings.add(new HistoryThing(currentApp.packageName, currentApp.label, new Date(), 0, "Couldn't cache application data"));
+					historyItems.add(new HistoryItem(currentApp.packageName, currentApp.label, new Date(), 0, "Couldn't cache application data"));
 					return;
 				}
 
@@ -166,7 +166,7 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 				}
 
 				Log.i(currentApp.packageName + ": New measurements: " + totalNewMeasurements + " across " + newData.size() + " sets");
-				historyThings.add(new HistoryThing(currentApp.packageName, currentApp.label, new Date(), totalNewMeasurements, null));
+				historyItems.add(new HistoryItem(currentApp.packageName, currentApp.label, new Date(), totalNewMeasurements, null));
 			}
 			catch (Exception e)
 			{
@@ -177,7 +177,7 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 					Log.i("Deleted cache file: " + cacheFile.getPath() + ", result: " + deletedFile);
 				}
 
-				historyThings.add(new HistoryThing(currentApp.packageName, currentApp.label, new Date(), 0, e.getMessage()));
+				historyItems.add(new HistoryItem(currentApp.packageName, currentApp.label, new Date(), 0, e.getMessage()));
 			}
 		}
 
@@ -191,16 +191,16 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 			//TODO get proper error messages
 			if(syncState < 0)
 			{
-				saveHistory(historyThings, "Failed to upload to QuantiModo");
+				saveHistory(historyItems, "Failed to upload to QuantiModo");
 			}
 			else
 			{
-				saveHistory(historyThings, null);
+				saveHistory(historyItems, null);
 			}
 		}
 		else
 		{
-			saveHistory(historyThings, null);
+			saveHistory(historyItems, null);
 		}
 
 		SharedPreferences prefs = context.getSharedPreferences("com.quantimodo.app_preferences", Context.MODE_MULTI_PROCESS);
@@ -283,27 +283,27 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 		return filteredNewData;
 	}
 
-	private void saveHistory(List<HistoryThing> historyThings, String syncError)
+	private void saveHistory(List<HistoryItem> historyItems, String syncError)
 	{
 		QuantiSyncDbHelper dbHelper = new QuantiSyncDbHelper(getContext());
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 
 		long now = System.currentTimeMillis();
 
-		for(HistoryThing currentHistoryThing : historyThings)
+		for(HistoryItem currentHistoryItem : historyItems)
 		{
 			final ContentValues values = new ContentValues();
-			values.put(QuantiSyncDbHelper.History.PACKAGENAME, currentHistoryThing.packageName);
-			values.put(QuantiSyncDbHelper.History.PACKAGELABEL, currentHistoryThing.packageLabel);
+			values.put(QuantiSyncDbHelper.History.PACKAGENAME, currentHistoryItem.packageName);
+			values.put(QuantiSyncDbHelper.History.PACKAGELABEL, currentHistoryItem.packageLabel);
 			values.put(QuantiSyncDbHelper.History.TIMESTAMP, now);
-			values.put(QuantiSyncDbHelper.History.SYNCCOUNT, currentHistoryThing.syncCount);
+			values.put(QuantiSyncDbHelper.History.SYNCCOUNT, currentHistoryItem.syncCount);
 			if(syncError != null)
 			{
 				values.put(QuantiSyncDbHelper.History.SYNCERROR, syncError);
 			}
 			else
 			{
-				values.put(QuantiSyncDbHelper.History.SYNCERROR, currentHistoryThing.syncError);
+				values.put(QuantiSyncDbHelper.History.SYNCERROR, currentHistoryItem.syncError);
 			}
 
 			//TODO find out if it's possible to use the ContentProvider here. I was getting a NullPointerException contentResolver.insert

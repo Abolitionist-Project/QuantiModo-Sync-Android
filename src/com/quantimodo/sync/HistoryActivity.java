@@ -5,7 +5,6 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,18 +16,22 @@ import android.widget.TextView;
 import com.quantimodo.sync.databases.QuantiSyncContentProvider;
 import com.quantimodo.sync.databases.QuantiSyncDbHelper;
 import com.quantimodo.sync.model.ApplicationData;
-import com.quantimodo.sync.model.HistoryThing;
+import com.quantimodo.sync.model.HistoryGroup;
+import com.quantimodo.sync.model.HistoryItem;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class HistoryActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor>
 {
 	private static final int URL_HISTORYLOADER = 0;
-	public List<HistoryThing> historyItems = null;
+	public List<HistoryItem> historyItems = null;
+	public List<HistoryGroup> historyGroups = null;
 
-	private HistoryAdapter adapter;
+	private HistoryItemListAdapter adapter;
 
 	@Override 
 	protected void onCreate(Bundle savedInstanceState)
@@ -42,7 +45,7 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 		
 		GridView listView = (GridView) findViewById(R.id.historylist);
 
-		adapter = new HistoryAdapter();
+		adapter = new HistoryItemListAdapter();
 		listView.setAdapter(adapter);
 
 		getLoaderManager().initLoader(URL_HISTORYLOADER, null, this);
@@ -74,22 +77,36 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 		case URL_HISTORYLOADER:
 			if(historyItems == null)
 			{
-				historyItems = new ArrayList<HistoryThing>(cursor.getCount());
+				historyItems = new ArrayList<HistoryItem>(cursor.getCount());
 			}
+			HashMap<Long, HistoryGroup> newHistoryGroups = new HashMap<Long, HistoryGroup>();
 
 			int packageNameColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.PACKAGENAME);
 			int packageLabelColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.PACKAGELABEL);
 			int timestampColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.TIMESTAMP);
 			int syncCountColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.SYNCCOUNT);
 			int syncErrorColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.SYNCERROR);
+
 			for(cursor.moveToLast(); !cursor.isBeforeFirst(); cursor.moveToPrevious())
 			{
-				historyItems.add(
-						new HistoryThing(cursor.getString(packageNameColumn),
-										 cursor.getString(packageLabelColumn),
-										 new Date(cursor.getLong(timestampColumn)),
-										 cursor.getInt(syncCountColumn),
-										 cursor.getString(syncErrorColumn)));
+				long timestamp = cursor.getLong(timestampColumn);
+				Date timestampDate = new Date(timestamp);
+				HistoryItem newHistoryItem = new HistoryItem(cursor.getString(packageNameColumn),
+						cursor.getString(packageLabelColumn),
+						timestampDate,
+						cursor.getInt(syncCountColumn),
+						cursor.getString(syncErrorColumn));
+
+				historyItems.add(newHistoryItem);
+
+				if(newHistoryGroups.containsKey(timestamp))
+				{
+					newHistoryGroups.get(timestamp).addItem(newHistoryItem);
+				}
+				else
+				{
+					newHistoryGroups.put(timestamp, new HistoryGroup(timestampDate, newHistoryItem));
+				}
 			}
 			break;
 		}
@@ -103,33 +120,39 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 
 	static class ViewHolder
 	{
-		ImageButton appIcon;
-		TextView label;
-		TextView syncCount;
-		TextView syncState;
+		ImageButton imAppIcon;
+		View vwIndicator;
+		TextView tvAppLabel;
+		TextView tvSyncDate;
+		TextView tvSyncDescription;
 	}
 	
-	public class HistoryAdapter extends BaseAdapter {
+	public class HistoryItemListAdapter extends BaseAdapter
+	{
+		private final DateFormat dateFormat;
+		private final DateFormat timeFormat;
+		private final LayoutInflater inflater;
 		
-		private LayoutInflater inflater;
-		
-		public HistoryAdapter() {
+		public HistoryItemListAdapter() {
 			inflater = (LayoutInflater) HistoryActivity.this.getSystemService(HistoryActivity.LAYOUT_INFLATER_SERVICE);
+			dateFormat = android.text.format.DateFormat.getLongDateFormat(getApplicationContext());
+			timeFormat = android.text.format.DateFormat.getTimeFormat(getApplicationContext());
 		}
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			
 			ViewHolder holder;
-			if(convertView == null) {
-				
+			if(convertView == null)
+			{
 				holder = new ViewHolder();
 				
 				convertView = inflater.inflate(R.layout.activity_historylist_row, null);
-				holder.appIcon = (ImageButton) convertView.findViewById(R.id.imgAppIcon);
-				holder.label = (TextView) convertView.findViewById(R.id.tvLabel);
-				holder.syncCount = (TextView) convertView.findViewById(R.id.tvSyncCnt);
-				holder.syncState = (TextView) convertView.findViewById(R.id.tvSyncState);
+				holder.imAppIcon = (ImageButton) convertView.findViewById(R.id.imAppIcon);
+				holder.tvAppLabel = (TextView) convertView.findViewById(R.id.tvAppLabel);
+				holder.tvSyncDate = (TextView) convertView.findViewById(R.id.tvSyncDate);
+				holder.tvSyncDescription = (TextView) convertView.findViewById(R.id.tvSyncDescription);
+				holder.vwIndicator = convertView.findViewById(R.id.vwIndicator);
 				
 				convertView.setTag(holder);
 			}
@@ -138,7 +161,7 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 				holder = (ViewHolder) convertView.getTag();
 			}
 			
-			HistoryThing entry = historyItems.get(position);
+			HistoryItem entry = historyItems.get(position);
 			
 			ApplicationData application = null;
 			for( ApplicationData temp : Global.applications)
@@ -152,34 +175,34 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 
 			if(application == null)
 			{
-				holder.label.setText(entry.packageLabel);
-				holder.appIcon.setImageResource(R.drawable.ic_appiconplaceholder);
+				holder.tvAppLabel.setText(entry.packageLabel);
+				holder.imAppIcon.setImageResource(R.drawable.ic_appiconplaceholder);
 			}
 			else
 			{
-				holder.label.setText(application.label);
+				holder.tvAppLabel.setText(application.label);
 				if(application.icon == null)
 				{
-					holder.appIcon.setImageResource(R.drawable.ic_appiconplaceholder);
+					holder.imAppIcon.setImageResource(R.drawable.ic_appiconplaceholder);
 				}
 				else
 				{
-					holder.appIcon.setImageDrawable(application.icon);
+					holder.imAppIcon.setImageDrawable(application.icon);
 				}
 			}
 
-			String syncCountString = String.format("%d measurements were synced", entry.syncCount);
-			holder.syncCount.setText(syncCountString);
 			if(entry.syncError == null)
 			{
-				holder.syncState.setTextColor(Color.parseColor("#99CC00"));
-				holder.syncState.setText("Synced");
+				holder.tvSyncDescription.setText(String.format("%d measurements were synced", entry.syncCount));
+				holder.vwIndicator.setBackgroundResource(R.color.indicator_success);
 			}
 			else
 			{
-				holder.syncState.setTextColor(Color.RED);
-				holder.syncState.setText("Failed");
+				holder.tvSyncDescription.setText(entry.syncError);
+				holder.vwIndicator.setBackgroundResource(R.color.indicator_faillure);
 			}
+
+			holder.tvSyncDate.setText(dateFormat.format(entry.timestamp) + ", " + timeFormat.format(entry.timestamp));
 
 			return convertView;
 		}

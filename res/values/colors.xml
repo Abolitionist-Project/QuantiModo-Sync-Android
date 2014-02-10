@@ -31,27 +31,9 @@
     <color name="text_card_light">#99000000</color>
     <color name="text_card_spinner">#E6000000</color>
 
-    <!-- Primary --><!--
-    <color name="mood_button_ecstatic">#CC0000</color>
-    <color name="mood_button_happy">#FAEC0A</color>
-    <color name="mood_button_ok">#49E317</color>
-    <color name="mood_button_sad">#00A3CC</color>
-    <color name="mood_button_depressed">#000000</color>
-    <color name="mood_button_line">#55000000</color>
-    -->
 
-    <!-- Holo -->
-    <color name="mood_button_ecstatic">#F57233</color>
-    <color name="mood_button_happy">#E9CD1A</color>
-    <color name="mood_button_ok">#CBD02D</color>
-    <color name="mood_button_sad">#4FA1AD</color>
-    <color name="mood_button_depressed">#1F1F1F</color>
-    <color name="mood_button_line">#55000000</color>
-    <integer-array name="chart_colours">
-        <item>@color/mood_button_depressed</item>
-        <item>@color/mood_button_sad</item>
-        <item>@color/mood_button_ok</item>
-        <item>@color/mood_button_happy</item>
-        <item>@color/mood_button_ecstatic</item>
-    </integer-array>
+    <color name="indicator_success">#99CC00</color>
+    <color name="indicator_faillure">#CC0000</color>
+
+
 </resources>
