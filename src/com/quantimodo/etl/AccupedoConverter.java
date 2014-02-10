@@ -72,7 +72,7 @@ public class AccupedoConverter implements Converter
 			final double outputCalories;
 			final int outputSteppingDuration;
 			final boolean outputAchievedGoal;
-			final long outputTime = (inputTime - steppingDuration); // Convert to seconds;
+			final long outputTime = (inputTime - steppingDuration) / 1000; // Convert to seconds;
 
 			if ((stepCount >= lastStepCount) && (lastDay == day) && (lastMonth == month) && (lastYear == year))
 			{
@@ -148,7 +148,7 @@ public class AccupedoConverter implements Converter
 		}
 		if(caloriesMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Walk/Run Distance", "Goals", "count", MeasurementSet.COMBINE_SUM, "Accupedo", caloriesMeasurements));
+			measurementSets.add(new MeasurementSet("Calories Burned", "Goals", "cal", MeasurementSet.COMBINE_SUM, "Accupedo", caloriesMeasurements));
 		}
 		return measurementSets;
 	}
