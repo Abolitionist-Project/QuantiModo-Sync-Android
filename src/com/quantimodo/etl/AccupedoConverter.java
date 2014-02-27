@@ -24,7 +24,7 @@ public class AccupedoConverter implements Converter
 		}
 
 		final Table table = databaseView.getTable("diaries");
-		for (int requiredFieldNumber = 1; requiredFieldNumber < REQUIRED_FIELD_NAMES.length; requiredFieldNumber++)
+		for (int requiredFieldNumber = 0; requiredFieldNumber < REQUIRED_FIELD_NAMES.length; requiredFieldNumber++)
 		{
 			if (!table.hasField(REQUIRED_FIELD_NAMES[requiredFieldNumber]))
 			{
