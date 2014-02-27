@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.quantimodo.sync"
-    android:versionCode="110"
-    android:versionName="1.1.0">
+    android:versionCode="111"
+    android:versionName="1.1.1">
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -67,7 +67,7 @@
         </service>
 
         <provider
-            android:name=".sync.AppDataContentProvider"
+            android:name="com.quantimodo.sync.sync.AppDataContentProvider"
             android:authorities="com.quantimodo.sync.content-appdata"
             android:syncable="true"
             android:exported="false"

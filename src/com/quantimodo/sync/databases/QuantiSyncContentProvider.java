@@ -12,10 +12,10 @@ public class QuantiSyncContentProvider extends ContentProvider
 {
 	private static final String AUTHORITY = "com.quantimodo.sync.provider";
 
-	public static Uri CONTENT_URI_HISTORY;
-
-	public static final String HISTORY_PATH = "/history";
+	public static final String HISTORY_PATH = "history";
 	public static final int HISTORY_CODE = 1;
+
+	public static Uri CONTENT_URI_HISTORY;
 
 	private UriMatcher uriMatcher;
 	private QuantiSyncDbHelper dbHelper;
@@ -31,7 +31,8 @@ public class QuantiSyncContentProvider extends ContentProvider
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, HISTORY_PATH, HISTORY_CODE);
 
-		CONTENT_URI_HISTORY = Uri.parse("content://" + AUTHORITY + HISTORY_PATH);
+		CONTENT_URI_HISTORY = Uri.parse("content://" + AUTHORITY + "/" + HISTORY_PATH);
+
 		return true;
 	}
 
@@ -82,6 +83,7 @@ public class QuantiSyncContentProvider extends ContentProvider
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
 		int code = uriMatcher.match(uri);
+
 		switch (code)
 		{
 		case HISTORY_CODE:
