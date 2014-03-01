@@ -6,7 +6,6 @@
     android:horizontalSpacing="8dp"
     android:numColumns="1"
     android:padding="8dp"
-    android:scrollbars="none"
+    android:scrollbarStyle="outsideOverlay"
     android:verticalSpacing="8dp" >
-
 </GridView>

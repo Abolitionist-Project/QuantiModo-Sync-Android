@@ -28,6 +28,10 @@ import java.util.List;
 public class HistoryActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor>
 {
 	private static final int URL_HISTORYLOADER = 0;
+	private static final int NUM_HISTORY_PRELOAD = 5;   // Load entries from five syncs at once
+
+	private LoaderManager loaderManager;
+
 	public List<HistoryItem> historyItems = null;
 	public List<HistoryGroup> historyGroups = null;
 
@@ -45,10 +49,15 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 		
 		GridView listView = (GridView) findViewById(R.id.historylist);
 
-		adapter = new HistoryItemListAdapter();
+		if(adapter == null)
+		{
+			adapter = new HistoryItemListAdapter();
+		}
+
 		listView.setAdapter(adapter);
 
-		getLoaderManager().initLoader(URL_HISTORYLOADER, null, this);
+		loaderManager = getLoaderManager();
+		loaderManager.initLoader(URL_HISTORYLOADER, null, this);
 	}
 
 	@Override
@@ -68,7 +77,7 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 	{
 		if(cursor == null)
 		{
-			Log.i("History cursor is null");
+			Log.i("Cursor is null");
 			return;
 		}
 
@@ -78,7 +87,11 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 			if(historyItems == null)
 			{
 				historyItems = new ArrayList<HistoryItem>(cursor.getCount());
+				cursor.moveToLast();
 			}
+
+			int newSyncsAdded = 0;  // Count number of historyGroups we loaded
+
 			HashMap<Long, HistoryGroup> newHistoryGroups = new HashMap<Long, HistoryGroup>();
 
 			int packageNameColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.PACKAGENAME);
@@ -87,7 +100,7 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 			int syncCountColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.SYNCCOUNT);
 			int syncErrorColumn = cursor.getColumnIndex(QuantiSyncDbHelper.History.SYNCERROR);
 
-			for(cursor.moveToLast(); !cursor.isBeforeFirst(); cursor.moveToPrevious())
+			for(; !cursor.isBeforeFirst(); cursor.moveToPrevious())
 			{
 				long timestamp = cursor.getLong(timestampColumn);
 				Date timestampDate = new Date(timestamp);
@@ -101,6 +114,13 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 
 				if(newHistoryGroups.containsKey(timestamp))
 				{
+					newSyncsAdded++;
+					if(newSyncsAdded == NUM_HISTORY_PRELOAD)    // If we loaded enough groups we break out. We have to move the cursor to the next element manually
+					{
+						cursor.moveToPrevious();
+						break;
+					}
+
 					newHistoryGroups.get(timestamp).addItem(newHistoryItem);
 				}
 				else
@@ -108,14 +128,17 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 					newHistoryGroups.put(timestamp, new HistoryGroup(timestampDate, newHistoryItem));
 				}
 			}
+
 			break;
 		}
+
+		adapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> cursorLoader)
 	{
-
+		historyItems = null;
 	}
 
 	static class ViewHolder
@@ -132,7 +155,9 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 		private final DateFormat dateFormat;
 		private final DateFormat timeFormat;
 		private final LayoutInflater inflater;
-		
+
+		private int lastUpdatePosition = 0; // The position at which we last requested an update
+
 		public HistoryItemListAdapter() {
 			inflater = (LayoutInflater) HistoryActivity.this.getSystemService(HistoryActivity.LAYOUT_INFLATER_SERVICE);
 			dateFormat = android.text.format.DateFormat.getLongDateFormat(getApplicationContext());
@@ -141,7 +166,8 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			
+
+
 			ViewHolder holder;
 			if(convertView == null)
 			{
@@ -203,6 +229,12 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 			}
 
 			holder.tvSyncDate.setText(dateFormat.format(entry.timestamp) + ", " + timeFormat.format(entry.timestamp));
+
+			if(position != lastUpdatePosition && position == getCount() - 1)
+			{
+				loaderManager.initLoader(URL_HISTORYLOADER, null, HistoryActivity.this);
+				lastUpdatePosition = position;
+			}
 
 			return convertView;
 		}

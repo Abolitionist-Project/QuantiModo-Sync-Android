@@ -230,9 +230,6 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 				if(newSet.name.equals(oldSet.name) && newSet.category.equals(oldSet.category) && newSet.unit.equals(oldSet.unit) && newSet.source.equals(oldSet.source))
 				{
 					containsSet = true;
-					Log.i("--Matched measurement set: " + newSet.name + ", unit: " + newSet.unit);
-					Log.i("New meas size: " + newSet.measurements.size());
-					Log.i("Old meas size: " + newSet.measurements.size());
 
 					ArrayList<Measurement> newMeasurements = new ArrayList<Measurement>();
 
@@ -258,13 +255,8 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 					// If there are new measurements, add the new set + new measurements to the filtered list
 					if(newMeasurements.size() > 0)
 					{
-						Log.i("Done comparing this set, got " + newMeasurements.size() + " new measurements");
 						newSet.measurements = newMeasurements;
 						filteredNewData.add(newSet);
-					}
-					else
-					{
-						Log.i("Done comparing this set, no new measurements");
 					}
 
 					break;
@@ -273,7 +265,6 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 
 			if(!containsSet)
 			{
-				Log.i("Couldn't match measurement set: " + newSet.name + ", unit: " + newSet.unit + ". Adding set of " + newSet.measurements.size());
 				filteredNewData.add(newSet);
 			}
 		}
