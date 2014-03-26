@@ -93,7 +93,7 @@ public class SleepAsAndroidConverter implements Converter
 		}
 		if(qualityMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Sleep Quality", "Sleep", "/1", MeasurementSet.COMBINE_MEAN, "Sleep as Android", qualityMeasurements));
+			measurementSets.add(new MeasurementSet("Deep Sleep", "Sleep", "/1", MeasurementSet.COMBINE_MEAN, "Sleep as Android", qualityMeasurements));
 		}
 
 		return measurementSets;
