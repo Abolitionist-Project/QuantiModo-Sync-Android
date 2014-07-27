@@ -58,7 +58,7 @@ public class T2MoodTrackerConverter implements Converter
 		}
 
 		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(1);
-		measurementSets.add(new MeasurementSet("Overall Mood", "Mood", "%", MeasurementSet.COMBINE_MEAN, "T2 Mood Tracker"));
+		measurementSets.add(new MeasurementSet("Overall Mood", null, "Mood", "%", MeasurementSet.COMBINE_MEAN, "T2 Mood Tracker"));
 		return measurementSets;
 	}
 }

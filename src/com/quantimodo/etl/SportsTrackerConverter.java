@@ -104,19 +104,19 @@ public class SportsTrackerConverter implements Converter
 		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(4);
 		if(distanceMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Walk/Run Distance", "Physical Activity", "m", MeasurementSet.COMBINE_SUM, "SportsTracker", distanceMeasurements));
+			measurementSets.add(new MeasurementSet("Walk/Run Distance", null, "Physical Activity", "m", MeasurementSet.COMBINE_SUM, "SportsTracker", distanceMeasurements));
 		}
 		if(heartRateMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Heart Rate", "Vital Signs", "bpm", MeasurementSet.COMBINE_MEAN, "SportsTracker", heartRateMeasurements));
+			measurementSets.add(new MeasurementSet("Heart Rate", null, "Vital Signs", "bpm", MeasurementSet.COMBINE_MEAN, "SportsTracker", heartRateMeasurements));
 		}
 		if(breathingRateMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Breathing Rate", "Vital Signs", "Hz", MeasurementSet.COMBINE_MEAN, "SportsTracker", breathingRateMeasurements));
+			measurementSets.add(new MeasurementSet("Breathing Rate", null, "Vital Signs", "Hz", MeasurementSet.COMBINE_MEAN, "SportsTracker", breathingRateMeasurements));
 		}
 		if(temperatureMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Temperature", "Vital Signs", "°C", MeasurementSet.COMBINE_MEAN, "SportsTracker", temperatureMeasurements));
+			measurementSets.add(new MeasurementSet("Temperature", null, "Vital Signs", "°C", MeasurementSet.COMBINE_MEAN, "SportsTracker", temperatureMeasurements));
 		}
 		return measurementSets;
 	}

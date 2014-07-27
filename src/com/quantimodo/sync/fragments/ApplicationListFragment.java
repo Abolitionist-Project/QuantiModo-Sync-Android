@@ -1,6 +1,5 @@
 package com.quantimodo.sync.fragments;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
@@ -14,7 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import com.quantimodo.sdk.QuantimodoClient;
+import com.quantimodo.sdk.Quantimodo;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.R;
 import com.quantimodo.sync.model.ApplicationData;
@@ -53,9 +52,6 @@ public class ApplicationListFragment extends Fragment
 
 		View view = inflater.inflate(R.layout.fragment_applicationlist, container, false);
 
-		QuantimodoClient qmClient = QuantimodoClient.getInstance();
-		Account qmAccount = qmClient.getAccount(activity);
-
 		initList(view);
 
 		return view;
@@ -79,8 +75,7 @@ public class ApplicationListFragment extends Fragment
 		int id = item.getItemId();
 		
 		if(id == R.id.action_sync) {
-			QuantimodoClient qmClient = QuantimodoClient.getInstance();
-			ContentResolver.requestSync(qmClient.getAccount(this.getActivity()), "com.quantimodo.sync.content-appdata", new Bundle());
+			ContentResolver.requestSync(Quantimodo.getAccount(this.getActivity().getApplicationContext()), "com.quantimodo.sync.content-appdata", new Bundle());
 			return true;
 		}
 		else {

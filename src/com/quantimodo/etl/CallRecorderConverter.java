@@ -60,7 +60,7 @@ public class CallRecorderConverter implements Converter
 
 			if(!measurementSets.containsKey(phoneNumber))
 			{
-				MeasurementSet newSet = new MeasurementSet("Telephone Call With " + phoneNumber, "Social Interactions", "s", MeasurementSet.COMBINE_SUM, "Call Recorder");
+				MeasurementSet newSet = new MeasurementSet("Telephone Call With " + phoneNumber, null, "Social Interactions", "s", MeasurementSet.COMBINE_SUM, "Call Recorder");
 				newSet.measurements.add(new Measurement(timestamp, duration, duration));
 				measurementSets.put(phoneNumber, newSet);
 			}

@@ -39,7 +39,7 @@ public class CardiographConverter implements Converter
 		}
 
 		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(1);
-		measurementSets.add(new MeasurementSet("Heart Rate", "Vital Signs", "bpm",MeasurementSet.COMBINE_MEAN, "CardioGraph", measurements));
+		measurementSets.add(new MeasurementSet("Heart Rate", null, "Vital Signs", "bpm",MeasurementSet.COMBINE_MEAN, "CardioGraph", measurements));
 		return measurementSets;
 	}
 }

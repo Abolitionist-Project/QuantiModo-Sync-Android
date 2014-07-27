@@ -98,7 +98,7 @@ public class MediSafeConverter implements Converter
 
 				if(!measurementSets.containsKey(name + unit))
 				{
-					MeasurementSet newSet = new MeasurementSet(name, "Social Interactions", "s", MeasurementSet.COMBINE_SUM, "MediSafe");
+					MeasurementSet newSet = new MeasurementSet(name, null, "Social Interactions", "s", MeasurementSet.COMBINE_SUM, "MediSafe");
 					newSet.measurements.add(new Measurement(timestamp, dose));
 					measurementSets.put(name + unit, newSet);
 				}

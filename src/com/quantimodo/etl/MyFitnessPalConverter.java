@@ -84,7 +84,7 @@ public class MyFitnessPalConverter implements Converter
 
 			if(!measurementSets.containsKey(name + unit))
 			{
-				MeasurementSet newSet = new MeasurementSet(name, "Foods", unit, MeasurementSet.COMBINE_SUM, "MyFitnessPal");
+				MeasurementSet newSet = new MeasurementSet(name, null, "Foods", unit, MeasurementSet.COMBINE_SUM, "MyFitnessPal");
 				newSet.measurements.add(new Measurement(timestamp, dose));
 				measurementSets.put(name + unit, newSet);
 			}

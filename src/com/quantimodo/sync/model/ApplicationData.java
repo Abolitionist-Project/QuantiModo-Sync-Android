@@ -9,7 +9,7 @@ import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.os.Handler;
-import com.quantimodo.sdk.QuantimodoClient;
+import com.quantimodo.sdk.Quantimodo;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.Log;
 import org.xml.sax.Attributes;
@@ -65,8 +65,6 @@ public class ApplicationData implements Comparable<ApplicationData>
 	{
 		try
 		{
-			QuantimodoClient qmClient = QuantimodoClient.getInstance();
-
 			SharedPreferences prefs = context.getSharedPreferences("com.quantimodo.sync_preferences", Context.MODE_MULTI_PROCESS);
 			String currentSyncingPackages = prefs.getString("syncingPackages", "");
 
@@ -79,7 +77,7 @@ public class ApplicationData implements Comparable<ApplicationData>
 					if (currentSyncingPackages.length() == 0)
 					{
 						Log.i("Enabling tracking apps sync, new app selected");
-						ContentResolver.setSyncAutomatically(qmClient.getAccount(context), "com.quantimodo.sync.content-appdata", true);
+						ContentResolver.setSyncAutomatically(Quantimodo.getAccount(context), "com.quantimodo.sync.content-appdata", true);
 					}
 					currentSyncingPackages = currentSyncingPackages.concat(thisSyncingApp);
 				}
@@ -92,7 +90,7 @@ public class ApplicationData implements Comparable<ApplicationData>
 					if (currentSyncingPackages.length() == 0)
 					{
 						Log.i("Disabling tracking apps sync, no apps selected");
-						ContentResolver.setSyncAutomatically(qmClient.getAccount(context), "com.quantimodo.sync.content-appdata", false);
+						ContentResolver.setSyncAutomatically(Quantimodo.getAccount(context), "com.quantimodo.sync.content-appdata", false);
 					}
 				}
 			}
@@ -188,7 +186,7 @@ public class ApplicationData implements Comparable<ApplicationData>
 								}
 							}
 
-							Account account = QuantimodoClient.getInstance().getAccount(context);
+							Account account = Quantimodo.getAccount(context);
 							if (newSyncingPackages.length() == 0)
 							{
 								Log.i("Disabling sync, no apps selected");

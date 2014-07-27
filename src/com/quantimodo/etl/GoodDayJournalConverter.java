@@ -53,7 +53,7 @@ public class GoodDayJournalConverter implements Converter
 		}
 
 		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(1);
-		measurementSets.add(new MeasurementSet("Overall Mood", "Mood", "/5", MeasurementSet.COMBINE_MEAN, "Good Day Journal", measurements));
+		measurementSets.add(new MeasurementSet("Overall Mood", null, "Mood", "/5", MeasurementSet.COMBINE_MEAN, "Good Day Journal", measurements));
 		return measurementSets;
 	}
 }

@@ -92,7 +92,7 @@ public class HowAreYouFeelingConverter implements Converter
 
 			if(!measurementSets.containsKey(ratingType + unit))
 			{
-				MeasurementSet newSet = new MeasurementSet(ratingType, "Mood", unit, MeasurementSet.COMBINE_MEAN, "How Are You Feeling?");
+				MeasurementSet newSet = new MeasurementSet(ratingType, null, "Mood", unit, MeasurementSet.COMBINE_MEAN, "How Are You Feeling?");
 				newSet.measurements.add(new Measurement(timestamp, ((Number)buttonValue.get(buttonID)).doubleValue()));
 				measurementSets.put(ratingType + unit, newSet);
 			}

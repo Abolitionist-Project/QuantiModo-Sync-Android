@@ -12,7 +12,7 @@ import android.preference.*;
 import android.provider.Settings;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
-import com.quantimodo.sdk.QuantimodoClient;
+import com.quantimodo.sdk.Quantimodo;
 import com.quantimodo.sync.receivers.SyncTimeReceiver;
 
 import java.text.SimpleDateFormat;
@@ -84,10 +84,8 @@ public class SettingsActivity extends PreferenceActivity
 
 	void initGeneralPreferences()
 	{
-		QuantimodoClient qmClient = QuantimodoClient.getInstance();
-
 		Preference preference = findPreference("quantimodoAccount");
-		preference.setSummary(qmClient.getAccount(this).name);
+		preference.setSummary(Quantimodo.getAccount(this.getApplicationContext()).name);
 		preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener()
 		{
 			@Override public boolean onPreferenceClick(Preference preference)
@@ -103,8 +101,7 @@ public class SettingsActivity extends PreferenceActivity
 
 	void initSynchronizationPreferences()
 	{
-		QuantimodoClient qmClient = QuantimodoClient.getInstance();
-		Account qmAccount = qmClient.getAccount(this);
+		Account qmAccount = Quantimodo.getAccount(this.getApplicationContext());
 		boolean syncAutomatically = ContentResolver.getSyncAutomatically(qmAccount, "com.quantimodo.sync.content-appdata");
 
 		CheckBoxPreference checkBoxPreference = (CheckBoxPreference) findPreference("syncAppData");
@@ -169,11 +166,10 @@ public class SettingsActivity extends PreferenceActivity
 	{
 		@Override public boolean onPreferenceChange(Preference preference, Object o)
 		{
-			QuantimodoClient qmClient = QuantimodoClient.getInstance();
 
 			boolean syncAutomatically = (Boolean) o;
 
-			ContentResolver.setSyncAutomatically(qmClient.getAccount(preference.getContext()), "com.quantimodo.sync.content-appdata", syncAutomatically);
+			ContentResolver.setSyncAutomatically(Quantimodo.getAccount(preference.getContext()), "com.quantimodo.sync.content-appdata", syncAutomatically);
 
 			lpSyncInterval.setEnabled(syncAutomatically);
 			cbWiFiOnly.setEnabled(syncAutomatically);

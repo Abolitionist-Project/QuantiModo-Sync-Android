@@ -13,7 +13,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
-import com.quantimodo.sdk.QuantimodoClient;
+import com.quantimodo.sdk.Quantimodo;
+import com.quantimodo.sdk.QuantimodoApi;
 import com.stericson.RootTools.RootTools;
 
 public class WelcomeActivity extends Activity
@@ -104,8 +105,7 @@ public class WelcomeActivity extends Activity
 
 	private void getAccountNames()
 	{
-		QuantimodoClient qmClient = QuantimodoClient.getInstance();
-		Account[] accounts = qmClient.getAccounts(this);
+		Account[] accounts = Quantimodo.getAccounts(this.getApplicationContext());
 
 		final String[] names = new String[accounts.length];
 		LayoutInflater inflater = getLayoutInflater();
@@ -212,25 +212,24 @@ public class WelcomeActivity extends Activity
 
 	private void connectToAccount()
 	{
-		QuantimodoClient qmClient = QuantimodoClient.getInstance();
-		Account account = qmClient.getAccount(WelcomeActivity.this, selectedAccount);
-		qmClient.getAccessToken(WelcomeActivity.this, account, Global.QM_ID, Global.QM_SECRET, Global.QM_SCOPES, new QuantimodoClient.OnAuthenticationDoneListener()
-		{
-			@Override
-			public void onSuccess(String authenticationToken)
-			{
-				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WelcomeActivity.this);
-				prefs.edit().putString("qmAccountName", selectedAccount).commit();
-				Global.init(WelcomeActivity.this);
-				WelcomeActivity.this.setResult(RESULT_OK);
-				WelcomeActivity.this.finish();
-			}
+        QuantimodoApi qmClient = QuantimodoApi.getInstance();
+        Account account = Quantimodo.getAccount(WelcomeActivity.this.getApplicationContext(), selectedAccount);
+		qmClient.getAccessToken(WelcomeActivity.this, account, Global.QM_ID, Global.QM_SECRET, Global.QM_SCOPES, new QuantimodoApi.OnAuthenticationDoneListener() {
+            @Override
+            public void onSuccess(String authenticationToken)
+            {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WelcomeActivity.this);
+                prefs.edit().putString("qmAccountName", selectedAccount).commit();
+                Global.init(WelcomeActivity.this);
+                WelcomeActivity.this.setResult(RESULT_OK);
+                WelcomeActivity.this.finish();
+            }
 
-			@Override
-			public void onFailed(String reason)
-			{
-				Toast.makeText(WelcomeActivity.this, "Authorization failed", Toast.LENGTH_SHORT).show();
-			}
-		});
+            @Override
+            public void onFailed(String reason)
+            {
+                Toast.makeText(WelcomeActivity.this, "Authorization failed", Toast.LENGTH_SHORT).show();
+            }
+        });
 	}
 }

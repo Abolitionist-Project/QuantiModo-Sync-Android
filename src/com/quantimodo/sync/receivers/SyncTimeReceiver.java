@@ -7,7 +7,7 @@ import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import com.quantimodo.sdk.QuantimodoClient;
+import com.quantimodo.sdk.Quantimodo;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.Log;
 
@@ -80,8 +80,7 @@ public class SyncTimeReceiver extends BroadcastReceiver
 
 	public static void setAlarm(Context context, int syncInterval)
 	{
-		QuantimodoClient qmClient = QuantimodoClient.getInstance();
-		Account qmAccount = qmClient.getAccount(context);
+		Account qmAccount = Quantimodo.getAccount(context);
 		if (qmAccount != null)
 		{
 			long interval = 0;

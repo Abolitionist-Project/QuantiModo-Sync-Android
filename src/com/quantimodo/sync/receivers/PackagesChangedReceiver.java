@@ -3,7 +3,7 @@ package com.quantimodo.sync.receivers;
 import android.accounts.Account;
 import android.content.*;
 import android.os.Handler;
-import com.quantimodo.sdk.QuantimodoClient;
+import com.quantimodo.sdk.Quantimodo;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.fragments.ApplicationListFragment;
 import com.quantimodo.sync.model.ApplicationData;
@@ -39,7 +39,7 @@ public class PackagesChangedReceiver extends BroadcastReceiver
 				String currentSyncingPackages = prefs.getString("syncingPackages", "");
 				currentSyncingPackages = currentSyncingPackages.replace(packageName + ",", "");
 
-				Account account = QuantimodoClient.getInstance().getAccount(context);
+				Account account = Quantimodo.getAccount(context);
 				if (account != null)
 				{
 					if (currentSyncingPackages.length() == 0 && account != null)

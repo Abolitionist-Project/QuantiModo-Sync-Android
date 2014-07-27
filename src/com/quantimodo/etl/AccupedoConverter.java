@@ -136,19 +136,19 @@ public class AccupedoConverter implements Converter
 		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(4);
 		if(stepGoalMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Daily Step Count Goal Reached", "Goals", "count", MeasurementSet.COMBINE_SUM, "Accupedo", stepGoalMeasurements));
+			measurementSets.add(new MeasurementSet("Daily Step Count Goal Reached", null, "Goals", "count", MeasurementSet.COMBINE_SUM, "Accupedo", stepGoalMeasurements));
 		}
 		if(stepsMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Steps", "Physical Activity", "steps", MeasurementSet.COMBINE_SUM, "Accupedo", stepsMeasurements));
+			measurementSets.add(new MeasurementSet("Steps", null, "Physical Activity", "steps", MeasurementSet.COMBINE_SUM, "Accupedo", stepsMeasurements));
 		}
 		if(distanceMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Walk/Run Distance", "Goals", "count", MeasurementSet.COMBINE_SUM, "Accupedo", distanceMeasurements));
+			measurementSets.add(new MeasurementSet("Walk/Run Distance", null, "Goals", "count", MeasurementSet.COMBINE_SUM, "Accupedo", distanceMeasurements));
 		}
 		if(caloriesMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Calories Burned", "Goals", "cal", MeasurementSet.COMBINE_SUM, "Accupedo", caloriesMeasurements));
+			measurementSets.add(new MeasurementSet("Calories Burned", null, "Goals", "cal", MeasurementSet.COMBINE_SUM, "Accupedo", caloriesMeasurements));
 		}
 		return measurementSets;
 	}

@@ -56,7 +56,7 @@ public class myFitnessCompanionConverter implements Converter
 		}
 
 		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(1);
-		measurementSets.add(new MeasurementSet("Heart Rate", "Vital Signs", "bpm", MeasurementSet.COMBINE_MEAN, "myFitnessCompanion"));
+		measurementSets.add(new MeasurementSet("Heart Rate", null, "Vital Signs", "bpm", MeasurementSet.COMBINE_MEAN, "myFitnessCompanion"));
 		return measurementSets;
 	}
 }

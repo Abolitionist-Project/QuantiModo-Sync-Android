@@ -77,23 +77,23 @@ public class SleepAsAndroidConverter implements Converter
 		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(5);
 		if(durationMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Sleep Duration", "Sleep", "min", MeasurementSet.COMBINE_SUM, "Sleep as Android", durationMeasurements));
+			measurementSets.add(new MeasurementSet("Sleep Duration", null, "Sleep", "min", MeasurementSet.COMBINE_SUM, "Sleep as Android", durationMeasurements));
 		}
 		if(cyclesMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Sleep Cycles", "Sleep", "event", MeasurementSet.COMBINE_SUM, "Sleep as Android", cyclesMeasurements));
+			measurementSets.add(new MeasurementSet("Sleep Cycles", null, "Sleep", "event", MeasurementSet.COMBINE_SUM, "Sleep as Android", cyclesMeasurements));
 		}
 		if(noiseMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Sleep Noise Level", "Sleep", "/1", MeasurementSet.COMBINE_MEAN, "Sleep as Android", noiseMeasurements));
+			measurementSets.add(new MeasurementSet("Sleep Noise Level", null, "Sleep", "/1", MeasurementSet.COMBINE_MEAN, "Sleep as Android", noiseMeasurements));
 		}
 		if(ratingMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Sleep Rating", "Sleep", "/6", MeasurementSet.COMBINE_MEAN, "Sleep as Android", ratingMeasurements));
+			measurementSets.add(new MeasurementSet("Sleep Rating", null, "Sleep", "/6", MeasurementSet.COMBINE_MEAN, "Sleep as Android", ratingMeasurements));
 		}
 		if(qualityMeasurements.size() != 0)
 		{
-			measurementSets.add(new MeasurementSet("Deep Sleep", "Sleep", "/1", MeasurementSet.COMBINE_MEAN, "Sleep as Android", qualityMeasurements));
+			measurementSets.add(new MeasurementSet("Deep Sleep", null, "Sleep", "/1", MeasurementSet.COMBINE_MEAN, "Sleep as Android", qualityMeasurements));
 		}
 
 		return measurementSets;

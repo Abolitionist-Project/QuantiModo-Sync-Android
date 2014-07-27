@@ -53,7 +53,7 @@ public class ZombiesRunConverter implements Converter
 		}
 
 		ArrayList<MeasurementSet> measurementSets = new ArrayList<MeasurementSet>(1);
-		measurementSets.add(new MeasurementSet("Walk/Run Distance", "Physical Activity", "m", MeasurementSet.COMBINE_SUM, "Zombies, Run!"));
+		measurementSets.add(new MeasurementSet("Walk/Run Distance", null, "Physical Activity", "m", MeasurementSet.COMBINE_SUM, "Zombies, Run!"));
 		return measurementSets;
 	}
 }

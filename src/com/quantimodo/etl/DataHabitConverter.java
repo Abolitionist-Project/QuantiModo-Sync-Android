@@ -75,7 +75,7 @@ public class DataHabitConverter implements Converter
 
 			if(!measurementSets.containsKey(name + unitName))
 			{
-				MeasurementSet newSet = new MeasurementSet(name, "Miscellaneous", unitName, combinationOperation, "DataHabit");
+				MeasurementSet newSet = new MeasurementSet(name, null, "Miscellaneous", unitName, combinationOperation, "DataHabit");
 				newSet.measurements.add(new Measurement(timestamp, value));
 				measurementSets.put(name + unitName, newSet);
 			}

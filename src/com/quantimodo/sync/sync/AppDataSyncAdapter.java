@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import com.quantimodo.etl.ETL;
-import com.quantimodo.sdk.QuantimodoClient;
+import com.quantimodo.sdk.QuantimodoApi;
 import com.quantimodo.sdk.model.Measurement;
 import com.quantimodo.sdk.model.MeasurementSet;
 import com.quantimodo.sync.Global;
@@ -47,7 +47,7 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		try
 		{
-			QuantimodoClient qmClient = QuantimodoClient.getInstance();
+            QuantimodoApi qmClient = QuantimodoApi.getInstance();
 			authToken = qmClient.getAccessTokenSynchronous(context, account, Global.QM_ID, Global.QM_SECRET, Global.QM_SCOPES);
 			if(authToken == null)
 			{
@@ -185,7 +185,7 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 
 		if (allNewData.size() > 0)
 		{
-			QuantimodoClient qmClient = QuantimodoClient.getInstance();
+            QuantimodoApi qmClient = QuantimodoApi.getInstance();
 			int syncState = qmClient.putMeasurementsSynchronous(context, authToken, allNewData);
 
 			//TODO get proper error messages
