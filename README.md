@@ -21,3 +21,9 @@ Tracking apps that are currently supported include:
 - Call Recorder
 - Data Habit
 - More to come!
+
+Want to add an app?
+
+Reader - Takes data from a specific file format and stores it in memory.  
+
+You just need to make a converter for it. A converter ransforms the data which has been read into a form that can be posted to the QuantiModo API. 
