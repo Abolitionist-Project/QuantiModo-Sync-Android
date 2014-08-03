@@ -147,7 +147,7 @@ public class ApplicationData implements Comparable<ApplicationData>
 
 				try
 				{
-					InputStream in =  context.getResources().openRawResource(R.raw.compatible_apps);    // Open asset containing compatible app data
+					InputStream in =  context.getResources().openRawResource(R.raw.compatible_apps);    // Open resource containing compatible app data
 
 					System.setProperty("org.xml.sax.driver", "org.xmlpull.v1.sax2.Driver"); // Init SAX parser
 					SAXParserFactory parseFactory = SAXParserFactory.newInstance();
