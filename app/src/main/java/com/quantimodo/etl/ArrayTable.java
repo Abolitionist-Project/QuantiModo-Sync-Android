@@ -1,5 +1,7 @@
 package com.quantimodo.etl;
 
+import com.quantimodo.etl.utils.TableUtil;
+
 import java.util.List;
 
 // A simple record store. Stores all records directly in RAM.
