@@ -21,4 +21,3 @@ Tracking apps that are currently supported include:
 - Call Recorder
 - Data Habit
 - More to come!
--
