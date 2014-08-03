@@ -1,6 +1,25 @@
 package com.quantimodo.etl;
 
 import com.quantimodo.android.sdk.model.MeasurementSet;
+import com.quantimodo.etl.converters.AccupedoConverter;
+import com.quantimodo.etl.converters.CallRecorderConverter;
+import com.quantimodo.etl.converters.CardiographConverter;
+import com.quantimodo.etl.converters.Converter;
+import com.quantimodo.etl.converters.DataHabitConverter;
+import com.quantimodo.etl.converters.GoodDayJournalConverter;
+import com.quantimodo.etl.converters.HowAreYouFeelingConverter;
+import com.quantimodo.etl.converters.MedHelperConverter;
+import com.quantimodo.etl.converters.MediSafeConverter;
+import com.quantimodo.etl.converters.MyFitnessPalConverter;
+import com.quantimodo.etl.converters.SleepAsAndroidConverter;
+import com.quantimodo.etl.converters.SportsTrackerConverter;
+import com.quantimodo.etl.converters.T2MoodTrackerConverter;
+import com.quantimodo.etl.converters.ZombiesRunConverter;
+import com.quantimodo.etl.converters.myFitnessCompanionConverter;
+import com.quantimodo.etl.readers.CSVReader;
+import com.quantimodo.etl.readers.Reader;
+import com.quantimodo.etl.readers.SQLiteReader;
+import com.quantimodo.etl.readers.SpreadsheetReader;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,7 @@
-package com.quantimodo.etl;
+package com.quantimodo.etl.utils;
+
+import com.quantimodo.etl.DatabaseView;
+import com.quantimodo.etl.utils.TableUtil;
 
 import java.io.IOException;
 

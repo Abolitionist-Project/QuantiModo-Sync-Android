@@ -1,5 +1,7 @@
 package com.quantimodo.etl;
 
+import com.quantimodo.etl.utils.DatabaseViewUtil;
+
 public class ArrayDatabaseView implements DatabaseView
 {
 	private final int tableCount;

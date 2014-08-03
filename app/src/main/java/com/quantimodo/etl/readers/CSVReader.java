@@ -1,4 +1,8 @@
-package com.quantimodo.etl;
+package com.quantimodo.etl.readers;
+
+import com.quantimodo.etl.ArrayDatabaseView;
+import com.quantimodo.etl.ArrayTable;
+import com.quantimodo.etl.DatabaseView;
 
 import java.io.File;
 import java.io.FileReader;

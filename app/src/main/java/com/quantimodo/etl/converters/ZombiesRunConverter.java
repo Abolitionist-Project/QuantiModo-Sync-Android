@@ -1,7 +1,10 @@
-package com.quantimodo.etl;
+package com.quantimodo.etl.converters;
 
 import com.quantimodo.android.sdk.model.Measurement;
 import com.quantimodo.android.sdk.model.MeasurementSet;
+import com.quantimodo.etl.DatabaseView;
+import com.quantimodo.etl.utils.ParseUtil;
+import com.quantimodo.etl.Table;
 
 import java.util.ArrayList;
 
