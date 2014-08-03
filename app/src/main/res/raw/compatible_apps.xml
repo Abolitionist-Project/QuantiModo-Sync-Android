@@ -1,0 +1,77 @@
+<CompatibleApps>
+    <!--    /internal = /data/data/com.packagename
+            /external = /mnt/sdcard/Android/data/data/com.packagename
+            If not internal/external use the actual file path. TODO implement /sdcard -->
+
+    <App label="Accupedo" packageName="com.corusen.accupedo.te" developer="Corusen LLC"
+        dataFile="/internal/databases/datastorage" rootRequired="true">
+        <DataTypes numberOfSteps="true"></DataTypes>
+    </App>
+
+    <App label="Call Recorder" packageName="polis.app.callrecorder" developer="Clever Mobile"
+        dataFile="/internal/databases/callRecorder" rootRequired="true">
+        <DataTypes phoneNumber="true"></DataTypes>
+    </App>
+
+
+    <App label="Cardiograph" packageName="com.macropinch.hydra.android" developer="MacroPinch"
+        dataFile="/internal/databases/db" rootRequired="true">
+        <DataTypes heartRate="true"></DataTypes>
+    </App>
+
+
+    <App label="Data Habit" packageName="com.rdpharr.DataHabit" developer="Roger Pharr"
+        dataFile="/internal/databases/DataHabit" rootRequired="true">
+        <DataTypes fiveStarRating="true"></DataTypes>
+    </App>
+
+    <App label="Good Day Journal" packageName="com.orman.day.rating" developer="Terasail LLC"
+        dataFile="/internal/databases/day_rating" rootRequired="true">
+        <DataTypes aspectsOfMood="true"></DataTypes>
+    </App>
+
+    <App label="How Are You Feeling" packageName="com.readyrickshaw.hayf" developer="ReadyRickshaw"
+        dataFile="/internal/databases/feeling_db" rootRequired="true">
+        <DataTypes aspectsOfMood="true"></DataTypes>
+    </App>
+
+    <App label="MedHelper" packageName="com.earthflare.android.medhelper.lite" developer="EARTHFLARE"
+        dataFile="/internal/databases/medtracker" rootRequired="true">
+        <DataTypes medicationConsumption="true"></DataTypes>
+    </App>
+
+    <App label="MedHelper Pro" packageName="com.earthflare.android.medhelper.pro" developer="EARTHFLARE"
+        dataFile="/internal/databases/medtracker" rootRequired="true">
+        <DataTypes medicationConsumption="true"></DataTypes>
+    </App>
+
+    <App label="MyFitnessPal" packageName="com.myfitnesspal.android" developer="MyFitnessPal"
+        dataFile="/internal/databases/myfitnesspal.db" rootRequired="true">
+        <DataTypes food="true"></DataTypes>
+    </App>
+
+    <App label="MediSafe" packageName="com.medisafe.android.client" developer="Medisafe Project"
+        dataFile="/internal/databases/mediapps.db" rootRequired="true">
+        <DataTypes medicationConsumption="true"></DataTypes>
+    </App>
+
+    <App label="myFitnessCompanion" packageName="com.myfitnesscompanion" developer="myFitnessCompanion"
+        dataFile="/internal/databases/myfitnesscompanion" rootRequired="true">
+        <DataTypes weight="true" bloodPressure="true"></DataTypes>
+    </App>
+
+    <App label="Zombies, Run!" packageName="com.sixtostart.zombiesrun" developer="Six to Start"
+        dataFile="/internal/databases/zombiesRunData" rootRequired="true">
+        <DataTypes weight="true" bloodPressure="true"></DataTypes>
+    </App>
+
+    <App label="Sleep as Android" packageName="com.urbandroid.sleep" developer="Urbandroid Team"
+        dataFile="/internal/databases/sleep-track.db" rootRequired="true">
+        <DataTypes qualityOfSleep="true" hoursOfSleep="true"></DataTypes>
+    </App>
+
+    <App label="T2 Mood Tracker" packageName="com.t2.vas" developer="T2" dataFile="/internal/databases/VAS_DATA"
+        rootRequired="true">
+        <DataTypes aspectsOfMood="true"></DataTypes>
+    </App>
+</CompatibleApps>
