@@ -6,7 +6,7 @@ import android.content.*;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
-import com.quantimodo.etl.ETL;
+import com.quantimodo.sync.etl.ETL;
 import com.quantimodo.android.sdk.QuantimodoApi;
 import com.quantimodo.android.sdk.model.Measurement;
 import com.quantimodo.android.sdk.model.MeasurementSet;

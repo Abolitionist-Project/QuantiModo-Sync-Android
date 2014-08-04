@@ -1,6 +1,6 @@
-package com.quantimodo.etl.readers;
+package com.quantimodo.sync.etl.readers;
 
-import com.quantimodo.etl.DatabaseView;
+import com.quantimodo.sync.etl.DatabaseView;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,12 +1,12 @@
-package com.quantimodo.etl.readers;
+package com.quantimodo.sync.etl.readers;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 
-import com.quantimodo.etl.ArrayDatabaseView;
-import com.quantimodo.etl.ArrayTable;
-import com.quantimodo.etl.DatabaseView;
+import com.quantimodo.sync.etl.ArrayDatabaseView;
+import com.quantimodo.sync.etl.ArrayTable;
+import com.quantimodo.sync.etl.DatabaseView;
 
 import java.io.File;
 import java.io.IOException;

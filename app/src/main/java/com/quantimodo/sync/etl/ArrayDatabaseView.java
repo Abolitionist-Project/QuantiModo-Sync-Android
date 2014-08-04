@@ -1,6 +1,6 @@
-package com.quantimodo.etl;
+package com.quantimodo.sync.etl;
 
-import com.quantimodo.etl.utils.DatabaseViewUtil;
+import com.quantimodo.sync.etl.utils.DatabaseViewUtil;
 
 public class ArrayDatabaseView implements DatabaseView
 {

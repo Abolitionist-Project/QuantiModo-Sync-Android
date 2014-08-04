@@ -1,6 +1,6 @@
-package com.quantimodo.etl;
+package com.quantimodo.sync.etl;
 
-import com.quantimodo.etl.utils.TableUtil;
+import com.quantimodo.sync.etl.utils.TableUtil;
 
 import java.util.List;
 

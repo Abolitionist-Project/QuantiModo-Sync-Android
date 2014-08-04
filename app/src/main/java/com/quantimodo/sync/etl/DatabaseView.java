@@ -1,4 +1,4 @@
-package com.quantimodo.etl;
+package com.quantimodo.sync.etl;
 
 public interface DatabaseView
 {

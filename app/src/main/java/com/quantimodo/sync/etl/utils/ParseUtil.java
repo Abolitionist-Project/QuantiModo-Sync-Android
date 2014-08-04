@@ -1,4 +1,4 @@
-package com.quantimodo.etl.utils;
+package com.quantimodo.sync.etl.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

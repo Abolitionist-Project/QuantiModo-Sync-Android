@@ -1,6 +1,6 @@
-package com.quantimodo.etl.utils;
+package com.quantimodo.sync.etl.utils;
 
-import com.quantimodo.etl.Table;
+import com.quantimodo.sync.etl.Table;
 
 import java.io.IOException;
 
