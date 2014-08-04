@@ -30,7 +30,6 @@ import java.util.List;
 
 public class ApplicationData implements Comparable<ApplicationData>
 {
-	public String separator;                          // Populated if this is a separator and should be handled as one
 	public String syncStatus;
 
 	public String label;                                // Label the user sees in his app drawer
@@ -42,11 +41,6 @@ public class ApplicationData implements Comparable<ApplicationData>
 	public Drawable icon;
 
 	private boolean isSyncEnabled;
-
-	public ApplicationData(String separator)
-	{
-		this.separator = separator;
-	}
 
 	public ApplicationData(String label, String packageName, File dataFile, boolean rootRequired, boolean isInstalled, boolean isSyncEnabled)
 	{
@@ -173,19 +167,6 @@ public class ApplicationData implements Comparable<ApplicationData>
 						public void endDocument()
 						{
 							Collections.sort(tempApps);
-							for (int i = 0; i < tempApps.size(); i++)
-							{
-								ApplicationData currentData = tempApps.get(i);
-								if (currentData.separator == null && !currentData.isInstalled)
-								{
-									tempApps.add(i, new ApplicationData("Compatible"));
-									break;
-								}
-								else if (i == 0)
-								{
-									tempApps.add(0, new ApplicationData("Installed"));
-								}
-							}
 
 							Account account = Quantimodo.getAccount(context);
 							if (newSyncingPackages.length() == 0)
