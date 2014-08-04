@@ -13,7 +13,7 @@ import com.quantimodo.android.sdk.model.MeasurementSet;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.Log;
 import com.quantimodo.sync.databases.QuantiSyncDbHelper;
-import com.quantimodo.sync.model.ApplicationData;
+import com.quantimodo.sync.model.SyncableApp;
 import com.quantimodo.sync.model.HistoryItem;
 import com.quantimodo.sync.su.SU;
 
@@ -31,7 +31,7 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 
 	private String authToken;
 	
-	private ArrayList<ApplicationData> syncingApps;
+	private ArrayList<SyncableApp> syncingApps;
 
 	public AppDataSyncAdapter(Context context, boolean autoInitialize)
 	{
@@ -69,14 +69,12 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		gotApps = false;
 
-		ApplicationData.getCompatibleApplications(context, handler, new ApplicationData.OnCompatibleApplicationsLoaded()
-		{
-			@Override
-			public void onComplete()
-			{
-				gotApps = true;
-			}
-		});
+		SyncableApp.getCompatibleApplications(context, handler, new SyncableApp.OnCompatibleApplicationsLoaded() {
+            @Override
+            public void onComplete() {
+                gotApps = true;
+            }
+        });
 
 		while (!gotApps)
 		{
@@ -89,8 +87,8 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 			}
 		}
 
-		syncingApps = new ArrayList<ApplicationData>();
-		for (ApplicationData currentData : Global.applications)
+		syncingApps = new ArrayList<SyncableApp>();
+		for (SyncableApp currentData : Global.applications)
 		{
 			if (currentData.isInstalled && currentData.isSyncEnabled() && !syncingApps.contains(currentData))
 			{
@@ -99,7 +97,7 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 		}
 	}
 
-	private void sync(ArrayList<ApplicationData> syncingApps)
+	private void sync(ArrayList<SyncableApp> syncingApps)
 	{
 		ArrayList<MeasurementSet> allNewData = new ArrayList<MeasurementSet>();
 
@@ -114,47 +112,47 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 		String cachePath = context.getCacheDir().getPath();
 		Log.i("Cache root path at: " + cachePath);
 
-		for (ApplicationData currentApp : syncingApps)
+		for (SyncableApp currentApp : syncingApps)
 		{
-			Log.i(currentApp.packageName + ": Started sync");
+			Log.i(currentApp.appInfo.packageName + ": Started sync");
 			File cacheFile = null;
 			try
 			{
-				String filepath = cachePath + "/" + currentApp.packageName + "-" + currentApp.dataFile.getName();
+				String filepath = cachePath + "/" + currentApp.appInfo.packageName + "-" + currentApp.appInfo.dataFile.getName();
 				cacheFile = new File(filepath);
 
 				ArrayList<MeasurementSet> oldData = null;
 				ArrayList<MeasurementSet> newData;
 				if (cacheFile.exists())
 				{
-					Log.i(currentApp.packageName + ": Extracting old data");
+					Log.i(currentApp.appInfo.packageName + ": Extracting old data");
 					oldData = etl.handle(cacheFile);
 
-					Log.i(currentApp.packageName + " Read " + oldData.size() + " old measurement sets");
+					Log.i(currentApp.appInfo.packageName + " Read " + oldData.size() + " old measurement sets");
 				}
 				else
 				{
-					Log.i(currentApp.packageName + ": No previous sync");
+					Log.i(currentApp.appInfo.packageName + ": No previous sync");
 				}
 
-				Log.i(currentApp.packageName + ": Caching new data");
-				SU.copyToCache(outputS, inputS, currentApp.dataFile.getPath(), cacheFile.getPath());
+				Log.i(currentApp.appInfo.packageName + ": Caching new data");
+				SU.copyToCache(outputS, inputS, currentApp.appInfo.dataFile.getPath(), cacheFile.getPath());
 
 				if (cacheFile.exists())
 				{
-					Log.i(currentApp.packageName + ": Extracting new data");
+					Log.i(currentApp.appInfo.packageName + ": Extracting new data");
 					newData = etl.handle(cacheFile);
 
-					Log.i(currentApp.packageName + " Read " + newData.size() + " new measurement sets");
+					Log.i(currentApp.appInfo.packageName + " Read " + newData.size() + " new measurement sets");
 				}
 				else
 				{
-					Log.i(currentApp.packageName + ": No file cached, no data to sync");
-					historyItems.add(new HistoryItem(currentApp.packageName, currentApp.label, new Date(), 0, "Couldn't cache application data"));
+					Log.i(currentApp.appInfo.packageName + ": No file cached, no data to sync");
+					historyItems.add(new HistoryItem(currentApp.appInfo.packageName, currentApp.appInfo.label, new Date(), 0, "Couldn't cache application data"));
 					return;
 				}
 
-				Log.i(currentApp.packageName + ": Comparing new and old data");
+				Log.i(currentApp.appInfo.packageName + ": Comparing new and old data");
 
 				newData = getNewData(newData, oldData);
 				allNewData.addAll(newData);
@@ -165,8 +163,8 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 					totalNewMeasurements += filteredSet.measurements.size();
 				}
 
-				Log.i(currentApp.packageName + ": New measurements: " + totalNewMeasurements + " across " + newData.size() + " sets");
-				historyItems.add(new HistoryItem(currentApp.packageName, currentApp.label, new Date(), totalNewMeasurements, null));
+				Log.i(currentApp.appInfo.packageName + ": New measurements: " + totalNewMeasurements + " across " + newData.size() + " sets");
+				historyItems.add(new HistoryItem(currentApp.appInfo.packageName, currentApp.appInfo.label, new Date(), totalNewMeasurements, null));
 			}
 			catch (Exception e)
 			{
@@ -177,7 +175,7 @@ public class AppDataSyncAdapter extends AbstractThreadedSyncAdapter
 					Log.i("Deleted cache file: " + cacheFile.getPath() + ", result: " + deletedFile);
 				}
 
-				historyItems.add(new HistoryItem(currentApp.packageName, currentApp.label, new Date(), 0, e.getMessage()));
+				historyItems.add(new HistoryItem(currentApp.appInfo.packageName, currentApp.appInfo.label, new Date(), 0, e.getMessage()));
 			}
 		}
 

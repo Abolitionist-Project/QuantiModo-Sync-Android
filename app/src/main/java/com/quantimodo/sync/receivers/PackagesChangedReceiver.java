@@ -6,7 +6,7 @@ import android.os.Handler;
 import com.quantimodo.android.sdk.Quantimodo;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.fragments.ApplicationListFragment;
-import com.quantimodo.sync.model.ApplicationData;
+import com.quantimodo.sync.model.SyncableApp;
 
 /*
  * BroadcastReceiver to monitor installed/uninstalled packages to refresh
@@ -21,13 +21,12 @@ public class PackagesChangedReceiver extends BroadcastReceiver
 	{
 		if (Global.applications.size() != 0) // Only request a reload if there were apps loaded to begin with
 		{
-			ApplicationData.getCompatibleApplications(context, new Handler(), new ApplicationData.OnCompatibleApplicationsLoaded()
-			{
-				@Override public void onComplete()
-				{
-					ApplicationListFragment.update();
-				}
-			});
+			SyncableApp.getCompatibleApplications(context, new Handler(), new SyncableApp.OnCompatibleApplicationsLoaded() {
+                @Override
+                public void onComplete() {
+                    ApplicationListFragment.update();
+                }
+            });
 		}
 		else                                 // The app isn't in the foreground, so check if there was an uninstall and potentially remove if from the "syncing" list
 		{

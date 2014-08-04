@@ -5,7 +5,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.os.Handler;
@@ -28,26 +27,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ApplicationData implements Comparable<ApplicationData>
+public class SyncableApp implements Comparable<SyncableApp>
 {
-	public String syncStatus;
+    // Static application data, supplied by converters
+    public SyncableAppInfo appInfo;
 
-	public String label;                                // Label the user sees in his app drawer
-	public String packageName;                          // Package name to identify individual apps
-	public File dataFile;                         // Location of this app's useful data
-	public boolean rootRequired;                        // True if root is required to export data
 	public boolean isInstalled;
-	public List<String> dataTypes = new ArrayList<String>(); // Types of data this app can provide
+    private boolean isSyncEnabled;
+    public String syncStatus;
 	public Drawable icon;
 
-	private boolean isSyncEnabled;
-
-	public ApplicationData(String label, String packageName, File dataFile, boolean rootRequired, boolean isInstalled, boolean isSyncEnabled)
+	public SyncableApp(SyncableAppInfo appInfo, boolean isInstalled, boolean isSyncEnabled)
 	{
-		this.label = label;
-		this.packageName = packageName;
-		this.dataFile = dataFile;
-		this.rootRequired = rootRequired;
+		this.appInfo = appInfo;
 		this.isInstalled = isInstalled;
 		this.isSyncEnabled = isSyncEnabled;
 	}
@@ -64,7 +56,7 @@ public class ApplicationData implements Comparable<ApplicationData>
 			SharedPreferences prefs = context.getSharedPreferences("com.quantimodo.sync_preferences", Context.MODE_MULTI_PROCESS);
 			String currentSyncingPackages = prefs.getString("syncingPackages", "");
 
-			String thisSyncingApp = this.packageName + ",";
+			String thisSyncingApp = this.appInfo.packageName + ",";
 			Log.i("Before syncing: " + currentSyncingPackages + ":");
 			if (isSyncEnabled)
 			{
@@ -136,7 +128,7 @@ public class ApplicationData implements Comparable<ApplicationData>
 
 				final SharedPreferences prefs = context.getSharedPreferences("com.quantimodo.sync_preferences", Context.MODE_MULTI_PROCESS);
 				final String currentSyncingPackages = prefs.getString("syncingPackages", "");
-				final List<ApplicationData> tempApps = new ArrayList<ApplicationData>();
+				final List<SyncableApp> tempApps = new ArrayList<SyncableApp>();
 				final PackageManager packageManager = context.getPackageManager();
 
 				try
@@ -153,7 +145,7 @@ public class ApplicationData implements Comparable<ApplicationData>
 
 					xmlIn.setContentHandler(new DefaultHandler()                            // Set handler to parse the data
 					{
-						private ApplicationData currentApp;
+						private SyncableApp currentApp;
 
 						private String newSyncingPackages;
 
@@ -230,15 +222,9 @@ public class ApplicationData implements Comparable<ApplicationData>
 								String thisSyncingApp = packageName + ",";
 								boolean isSyncEnabled = currentSyncingPackages.contains(thisSyncingApp);
 
-								currentApp = new ApplicationData(label, packageName, dataFile, rootRequired, isInstalled, isSyncEnabled);    // Set currentApp to this app
+                                SyncableAppInfo appInfo = new SyncableAppInfo(label, packageName, dataFile, rootRequired);
+								currentApp = new SyncableApp(appInfo, isInstalled, isSyncEnabled);    // Set currentApp to this app
 								currentApp.icon = icon;
-							}
-							else if (qName.equals("DataTypes"))                                                  // This element contains datatypes for currentApp
-							{
-								for (int i = 0; i < atts.getLength(); i++)                                           // Loop through all types and store the name
-								{
-									currentApp.dataTypes.add(atts.getValue(i));
-								}
 							}
 						}
 
@@ -272,15 +258,15 @@ public class ApplicationData implements Comparable<ApplicationData>
 	}
 
 	@Override
-	public int compareTo(ApplicationData otherApp)
+	public int compareTo(SyncableApp otherApp)
 	{
 		if (this.isInstalled && otherApp.isInstalled)            // Both installed
 		{
-			return label.compareToIgnoreCase(otherApp.label);
+			return appInfo.label.compareToIgnoreCase(otherApp.appInfo.label);
 		}
 		else if (!this.isInstalled && !otherApp.isInstalled)     // Neither installed
 		{
-			return label.compareToIgnoreCase(otherApp.label);
+			return appInfo.label.compareToIgnoreCase(otherApp.appInfo.label);
 		}
 		else                                                    // One installed
 		{

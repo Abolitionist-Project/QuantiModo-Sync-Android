@@ -15,7 +15,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import com.quantimodo.sync.databases.QuantiSyncContentProvider;
 import com.quantimodo.sync.databases.QuantiSyncDbHelper;
-import com.quantimodo.sync.model.ApplicationData;
+import com.quantimodo.sync.model.SyncableApp;
 import com.quantimodo.sync.model.HistoryGroup;
 import com.quantimodo.sync.model.HistoryItem;
 
@@ -189,10 +189,10 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 			
 			HistoryItem entry = historyItems.get(position);
 			
-			ApplicationData application = null;
-			for( ApplicationData temp : Global.applications)
+			SyncableApp application = null;
+			for( SyncableApp temp : Global.applications)
 			{
-				if(temp.label != null && temp.label.equals(entry.packageLabel))
+				if(temp.appInfo.label != null && temp.appInfo.label.equals(entry.packageLabel))
 				{
 					application = temp;
 					break;
@@ -206,7 +206,7 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 			}
 			else
 			{
-				holder.tvAppLabel.setText(application.label);
+				holder.tvAppLabel.setText(application.appInfo.label);
 				if(application.icon == null)
 				{
 					holder.imAppIcon.setImageResource(R.drawable.ic_appiconplaceholder);
@@ -220,12 +220,12 @@ public class HistoryActivity extends Activity implements LoaderManager.LoaderCal
 			if(entry.syncError == null)
 			{
 				holder.tvSyncDescription.setText(String.format("%d measurements were synced", entry.syncCount));
-				holder.vwIndicator.setBackgroundResource(R.color.indicator_success);
+				holder.vwIndicator.setBackgroundColor(getResources().getColor(R.color.indicator_success));
 			}
 			else
 			{
 				holder.tvSyncDescription.setText(entry.syncError);
-				holder.vwIndicator.setBackgroundResource(R.color.indicator_faillure);
+				holder.vwIndicator.setBackgroundColor(getResources().getColor(R.color.indicator_faillure));
 			}
 
 			holder.tvSyncDate.setText(dateFormat.format(entry.timestamp) + ", " + timeFormat.format(entry.timestamp));

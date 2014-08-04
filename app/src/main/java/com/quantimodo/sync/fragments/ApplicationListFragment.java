@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.quantimodo.android.sdk.Quantimodo;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.R;
-import com.quantimodo.sync.model.ApplicationData;
+import com.quantimodo.sync.model.SyncableApp;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
@@ -43,14 +43,12 @@ public class ApplicationListFragment extends Fragment
 			return null;
 		}
 
-		ApplicationData.getCompatibleApplications(activity.getApplicationContext(), new Handler(), new ApplicationData.OnCompatibleApplicationsLoaded()
-		{
-			@Override
-			public void onComplete()
-			{
-				ApplicationListFragment.update();
-			}
-		});
+		SyncableApp.getCompatibleApplications(activity.getApplicationContext(), new Handler(), new SyncableApp.OnCompatibleApplicationsLoaded() {
+            @Override
+            public void onComplete() {
+                ApplicationListFragment.update();
+            }
+        });
 
 		View view = inflater.inflate(R.layout.fragment_applicationlist, container, false);
 
@@ -115,7 +113,7 @@ public class ApplicationListFragment extends Fragment
 		{
 			int position = (Integer) view.getTag();
 
-			ApplicationData currentApp = Global.applications.get(position);
+			SyncableApp currentApp = Global.applications.get(position);
 			if (currentApp.isInstalled)
 			{
 				boolean nowSyncing = currentApp.setSyncEnabled(activity, !currentApp.isSyncEnabled());
@@ -140,7 +138,7 @@ public class ApplicationListFragment extends Fragment
 			else
 			{
 				// Start a generic ACTION_VIEW intent, most likely captured by the Play store, there's no way of knowing whether the user installed the app here or not.
-				activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + currentApp.packageName)));
+				activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + currentApp.appInfo.packageName)));
 			}
 		}
 	};
@@ -155,21 +153,21 @@ public class ApplicationListFragment extends Fragment
 		{
 			int position = (Integer) view.getTag();
 
-			ApplicationData currentApp = Global.applications.get(position);
+			SyncableApp currentApp = Global.applications.get(position);
 			PackageManager packageManager = activity.getPackageManager();
 			try
 			{
-				Intent launchIntent = packageManager.getLaunchIntentForPackage(currentApp.packageName);
+				Intent launchIntent = packageManager.getLaunchIntentForPackage(currentApp.appInfo.packageName);
 				activity.startActivity(launchIntent);
 			}
 			catch (Exception e)
 			{
-				activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + currentApp.packageName)));
+				activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + currentApp.appInfo.packageName)));
 			}
 		}
 	};
 
-	public class Adapter extends ArrayAdapter<ApplicationData> implements StickyListHeadersAdapter
+	public class Adapter extends ArrayAdapter<SyncableApp> implements StickyListHeadersAdapter
     {
         private LayoutInflater inflater;
 
@@ -199,7 +197,7 @@ public class ApplicationListFragment extends Fragment
 		}
 
 		@Override
-		public ApplicationData getItem(int position)
+		public SyncableApp getItem(int position)
 		{
 			return Global.applications.get(position);
 		}
@@ -220,7 +218,7 @@ public class ApplicationListFragment extends Fragment
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
 			ViewHolder holder;
-			ApplicationData application = Global.applications.get(position);
+			SyncableApp application = Global.applications.get(position);
 			if (convertView == null)
 			{
 				holder = new ViewHolder();
@@ -243,7 +241,7 @@ public class ApplicationListFragment extends Fragment
             holder.stateIcon.setTag(position);    // This tag is used to identify the row when it was clicked
             holder.appIcon.setTag(position);      // Idem
 
-            holder.label.setText(application.label);
+            holder.label.setText(application.appInfo.label);
             if (application.icon != null)
             {
                 holder.appIcon.setImageDrawable(application.icon);
@@ -284,7 +282,7 @@ public class ApplicationListFragment extends Fragment
         public View getHeaderView(int position, View convertView, ViewGroup viewGroup)
         {
             HeaderViewHolder holder;
-            ApplicationData application = Global.applications.get(position);
+            SyncableApp application = Global.applications.get(position);
             if (convertView == null)
             {
                 holder = new HeaderViewHolder();

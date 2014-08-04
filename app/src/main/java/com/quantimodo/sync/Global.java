@@ -3,7 +3,7 @@ package com.quantimodo.sync;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import com.quantimodo.sync.model.ApplicationData;
+import com.quantimodo.sync.model.SyncableApp;
 import com.quantimodo.sync.model.SensorData;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class Global
 	public static final String QM_SECRET = "joeyrpmslrf8w4wef6weq9qytpu50374bosgr8";
 	public static final String historyPackage = "syncs.sqlite";
 
-	public static List<ApplicationData> applications = new ArrayList<ApplicationData>();
+	public static List<SyncableApp> applications = new ArrayList<SyncableApp>();
 	public static List<SensorData> sensors = new ArrayList<SensorData>();
 
 	// FLags
