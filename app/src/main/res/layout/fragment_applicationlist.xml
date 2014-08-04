@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+<se.emilsjolander.stickylistheaders.StickyListHeadersListView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingBottom="8dp"
     android:clipToPadding="false"
     android:scrollbars="none"
-    android:numColumns="1"
-    android:verticalSpacing="8dp"
-    android:horizontalSpacing="8dp" />
+    android:divider="@android:color/transparent"
+    android:dividerHeight="8dp" />

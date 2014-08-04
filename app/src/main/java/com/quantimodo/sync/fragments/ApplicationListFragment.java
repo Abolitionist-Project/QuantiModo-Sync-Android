@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.*;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import com.quantimodo.android.sdk.Quantimodo;
@@ -18,10 +17,13 @@ import com.quantimodo.sync.Global;
 import com.quantimodo.sync.R;
 import com.quantimodo.sync.model.ApplicationData;
 
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+
 public class ApplicationListFragment extends Fragment
 {
 	private static Adapter adapter;
-	private static GridView gridView;
+	private static StickyListHeadersListView listView;
 
 	private Activity activity;
 
@@ -85,12 +87,14 @@ public class ApplicationListFragment extends Fragment
 
 	private void initList(View view)
 	{
-		gridView = (GridView) view.findViewById(android.R.id.list);
+		listView = (StickyListHeadersListView) view.findViewById(android.R.id.list);
+        listView.setAreHeadersSticky(false);
+        
 		if (adapter == null)
 		{
 			adapter = new Adapter();
 		}
-		gridView.setAdapter(adapter);
+		listView.setAdapter(adapter);
 	}
 
 	public static void update()
@@ -116,9 +120,9 @@ public class ApplicationListFragment extends Fragment
 			{
 				boolean nowSyncing = currentApp.setSyncEnabled(activity, !currentApp.isSyncEnabled());
 
-				int firstVisible = gridView.getFirstVisiblePosition();
+				int firstVisible = listView.getFirstVisiblePosition();
 				int rowFromTop = position - firstVisible;
-				View child = gridView.getChildAt(rowFromTop);                                   // Updating the view
+				View child = listView.getChildAt(rowFromTop);                                   // Updating the view
 				TextView syncState = (TextView) child.findViewById(R.id.tvSyncState);
 				ImageButton stateIcon = (ImageButton) child.findViewById(R.id.imStateIcon);
 
@@ -165,49 +169,27 @@ public class ApplicationListFragment extends Fragment
 		}
 	};
 
-	static class ViewHolder
-	{
-		TextView separator;
+	public class Adapter extends ArrayAdapter<ApplicationData> implements StickyListHeadersAdapter
+    {
+        private LayoutInflater inflater;
 
-		ImageButton appIcon;
-		ImageButton stateIcon;
-		TextView label;
-		TextView syncState;
-	}
+        private class HeaderViewHolder
+        {
+            TextView separator;
+        }
 
-	public class Adapter extends ArrayAdapter<ApplicationData>
-	{
-		private static final int TYPE_APPLICATION = 0;
-		private static final int TYPE_SEPARATOR = 1;
-		private static final int TYPE_MAX_COUNT = 2;
-
-		private LayoutInflater inflater;
+        private class ViewHolder
+        {
+            ImageButton appIcon;
+            ImageButton stateIcon;
+            TextView label;
+            TextView syncState;
+        }
 
 		public Adapter()
 		{
 			super(activity, R.layout.fragment_applicationlist_row, Global.applications);
 			inflater = LayoutInflater.from(activity);
-		}
-
-		@Override
-		public int getItemViewType(int position)
-		{
-			ApplicationData application = Global.applications.get(position);
-
-			if (application.separator == null)
-			{
-				return TYPE_APPLICATION;
-			}
-			else
-			{
-				return TYPE_SEPARATOR;
-			}
-		}
-
-		@Override
-		public int getViewTypeCount()
-		{
-			return TYPE_MAX_COUNT;
 		}
 
 		@Override
@@ -228,6 +210,12 @@ public class ApplicationListFragment extends Fragment
 			return position;
 		}
 
+        @Override
+        public long getHeaderId(int i)
+        {
+            return Global.applications.get(i).isInstalled ? 0 : 1;
+        }
+
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
@@ -237,76 +225,91 @@ public class ApplicationListFragment extends Fragment
 			{
 				holder = new ViewHolder();
 
-				switch (getItemViewType(position))
-				{
-				case TYPE_SEPARATOR:
-					convertView = inflater.inflate(R.layout.view_separator, null);
-					holder.separator = (TextView) convertView.findViewById(R.id.separator);
-					convertView.setTag(holder);
-					break;
-				case TYPE_APPLICATION:
-					convertView = inflater.inflate(R.layout.fragment_applicationlist_row, null);
-					holder.label = (TextView) convertView.findViewById(R.id.tvLabel);
-					holder.syncState = (TextView) convertView.findViewById(R.id.tvSyncState);
-					holder.appIcon = (ImageButton) convertView.findViewById(R.id.imAppIcon);
-					holder.appIcon.setOnClickListener(onAppIconClicked);
-					holder.stateIcon = (ImageButton) convertView.findViewById(R.id.imStateIcon);
-					holder.stateIcon.setOnClickListener(onStateIconClicked);
-					convertView.setTag(holder);
-					break;
-				}
+                convertView = inflater.inflate(R.layout.fragment_applicationlist_row, null);
+                holder.label = (TextView) convertView.findViewById(R.id.tvLabel);
+                holder.syncState = (TextView) convertView.findViewById(R.id.tvSyncState);
+                holder.appIcon = (ImageButton) convertView.findViewById(R.id.imAppIcon);
+                holder.appIcon.setOnClickListener(onAppIconClicked);
+                holder.stateIcon = (ImageButton) convertView.findViewById(R.id.imStateIcon);
+                holder.stateIcon.setOnClickListener(onStateIconClicked);
+
+                convertView.setTag(holder);
 			}
 			else
 			{
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			if (application.separator != null)
-			{
-				holder.separator.setText(application.separator);
-			}
-			else
-			{
+            holder.stateIcon.setTag(position);    // This tag is used to identify the row when it was clicked
+            holder.appIcon.setTag(position);      // Idem
 
-				holder.stateIcon.setTag(position);      // This tag is used to identify the row when it was clicked
-				holder.appIcon.setTag(position);      // Idem
+            holder.label.setText(application.label);
+            if (application.icon != null)
+            {
+                holder.appIcon.setImageDrawable(application.icon);
+            }
+            else
+            {
+                holder.appIcon.setImageResource(R.drawable.ic_appiconplaceholder);   // TODO dynamically load icon
+            }
 
-				holder.label.setText(application.label);
-				if (application.icon != null)
-				{
-					holder.appIcon.setImageDrawable(application.icon);
-				}
-				else
-				{
-					holder.appIcon.setImageResource(R.drawable.ic_appiconplaceholder);   // TODO dynamically load icon
-				}
+            if (application.isInstalled)
+            {
+                if (application.isSyncEnabled())
+                {
+                    holder.stateIcon.setImageResource(R.drawable.ic_checked);
+                    holder.syncState.setText(R.string.app_syncEnabled);
+                }
+                else
+                {
+                    holder.stateIcon.setImageResource(R.drawable.ic_unchecked);
+                    holder.syncState.setText(R.string.app_syncDisabled);
+                }
 
-				if (application.isInstalled)
-				{
-					if (application.isSyncEnabled())
-					{
-						holder.stateIcon.setImageResource(R.drawable.ic_checked);
-						holder.syncState.setText(R.string.app_syncEnabled);
-					}
-					else
-					{
-						holder.stateIcon.setImageResource(R.drawable.ic_unchecked);
-						holder.syncState.setText(R.string.app_syncDisabled);
-					}
-
-					if (application.syncStatus != null)
-					{
-						holder.syncState.setText(application.syncStatus);
-					}
-				}
-				else
-				{
-					holder.stateIcon.setImageResource(R.drawable.ic_playstore);
-					holder.syncState.setText(R.string.app_notInstalled);
-				}
-			}
+                if (application.syncStatus != null)
+                {
+                    holder.syncState.setText(application.syncStatus);
+                }
+            }
+            else
+            {
+                holder.stateIcon.setImageResource(R.drawable.ic_playstore);
+                holder.syncState.setText(R.string.app_notInstalled);
+            }
 
 			return convertView;
 		}
-	}
+
+        @Override
+        public View getHeaderView(int position, View convertView, ViewGroup viewGroup)
+        {
+            HeaderViewHolder holder;
+            ApplicationData application = Global.applications.get(position);
+            if (convertView == null)
+            {
+                holder = new HeaderViewHolder();
+
+                convertView = inflater.inflate(R.layout.view_separator, null);
+                holder.separator = (TextView) convertView.findViewById(R.id.separator);
+
+                convertView.setTag(holder);
+            }
+            else
+            {
+                holder = (HeaderViewHolder) convertView.getTag();
+            }
+
+            if(application.isInstalled)
+            {
+                holder.separator.setText("Installed");
+            }
+            else
+            {
+                holder.separator.setText("Compatible");
+            }
+
+
+            return convertView;
+        }
+    }
 }
