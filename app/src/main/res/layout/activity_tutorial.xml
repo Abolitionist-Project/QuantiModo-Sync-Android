@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,104 +16,103 @@
 
             <!--  Introduction -->
 
-                <LinearLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/sectionHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:text="About QuantiModo Sync"></TextView>
 
-                    <TextView
-                        style="@style/sectionHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="About QuantiModo Sync">
-                    </TextView>
-                    <TextView
-                        android:paddingTop="8dp"
-                        android:paddingRight="16dp"
-                        android:paddingLeft="16dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="QuantiModo Sync lets you sync your favorite life tracking applications with QuantiModo, where you'll be able to use your data to gain valuable insights."
-                        android:textColor="@android:color/black">
-                    </TextView>
-                    <TextView
-                        style="@style/sectionHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Root">
-                    </TextView>
-                    <TextView
-                        android:paddingTop="8dp"
-                        android:paddingRight="16dp"
-                        android:paddingLeft="16dp"
-                        android:paddingBottom="16dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Root access is required to access protected files, QuantiModo Sync won't function without it. Tap the icon in the lower right of this dialog to continue, make sure you grant QuantiModo Sync root access when asked."
-                        android:textColor="@android:color/black">
-                    </TextView>
-                </LinearLayout>
+                <TextView
+                    android:paddingTop="8dp"
+                    android:paddingRight="16dp"
+                    android:paddingLeft="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="QuantiModo Sync lets you sync your favorite life tracking applications with QuantiModo, where you'll be able to use your data to gain valuable insights."
+                    android:textColor="@android:color/black"></TextView>
+
+                <TextView
+                    style="@style/sectionHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Root"></TextView>
+
+                <TextView
+                    android:paddingTop="8dp"
+                    android:paddingRight="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingBottom="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Root access is required to access protected files, QuantiModo Sync won't function without it. Tap the icon in the lower right of this dialog to continue, make sure you grant QuantiModo Sync root access when asked."
+                    android:textColor="@android:color/black"></TextView>
+            </LinearLayout>
 
             <!--  System Sanity -->
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
-                    <TextView
-                        style="@style/sectionHeader"
-                        android:id="@+id/rootSectionHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Root"
-                        android:layout_alignParentTop="true">
-                    </TextView>
-                    <TextView
-                        android:id="@+id/tvRootResult"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/rootSectionHeader"
-                        android:paddingTop="8dp"
-                        android:paddingRight="16dp"
-                        android:paddingLeft="16dp"
-                        android:text="Checking...">
-                    </TextView>
-                </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
 
-            <!-- Google Account -->
-                <LinearLayout
-                    android:id="@+id/lnQuantimodoAccounts"
+                <TextView
+                    style="@style/sectionHeader"
+                    android:id="@+id/rootSectionHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <TextView
-                        style="@style/sectionHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Connect to QuantiModo">
-                    </TextView>
-                    <TextView
-                        android:paddingTop="8dp"
-                        android:paddingRight="16dp"
-                        android:paddingLeft="16dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Select your QuantiModo account below, your tracking apps will sync to this account."
-                        android:textColor="@android:color/black">
-                    </TextView>
-                    <TextView
-                        style="@style/sectionHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Accounts">
-                    </TextView>
-                </LinearLayout>
+                    android:text="Root"
+                    android:layout_alignParentTop="true"></TextView>
+
+                <TextView
+                    android:id="@+id/tvRootResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/rootSectionHeader"
+                    android:paddingTop="8dp"
+                    android:paddingRight="16dp"
+                    android:paddingLeft="16dp"
+                    android:text="Checking..."></TextView>
+            </RelativeLayout>
+
+            <!-- Google Account -->
+            <LinearLayout
+                android:id="@+id/lnQuantimodoAccounts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/sectionHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Connect to QuantiModo"></TextView>
+
+                <TextView
+                    android:paddingTop="8dp"
+                    android:paddingRight="16dp"
+                    android:paddingLeft="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select your QuantiModo account below, your tracking apps will sync to this account."
+                    android:textColor="@android:color/black"></TextView>
+
+                <TextView
+                    style="@style/sectionHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Accounts"></TextView>
+            </LinearLayout>
         </ViewFlipper>
 
         <View
             android:layout_width="wrap_content"
             android:layout_height="2dp"
             android:background="#FF33B5E5"
-            android:layout_weight="1">
-        </View>
+            android:layout_weight="1"></View>
+
         <RelativeLayout
             android:id="@+id/relative_buttons"
             android:layout_weight="1"
@@ -127,35 +127,35 @@
                 android:layout_height="match_parent"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp">
+
                 <ImageButton
                     android:id="@+id/button_next"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector"
-                    android:src="@drawable/ab_next" >
-                </ImageButton>
+                    android:src="@drawable/ab_next"></ImageButton>
+
                 <ImageButton
                     android:id="@+id/button_browser"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector"
-                    android:src="@drawable/ab_browser" >
-                </ImageButton>
+                    android:src="@drawable/ab_browser"></ImageButton>
+
                 <ImageButton
                     android:id="@+id/button_playstore"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector"
-                    android:src="@drawable/ab_playstore" >
-                </ImageButton>
+                    android:src="@drawable/ab_playstore"></ImageButton>
+
                 <ImageButton
                     android:id="@+id/button_retry"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector"
-                    android:src="@drawable/ab_refresh" >
-                </ImageButton>
+                    android:src="@drawable/ab_refresh"></ImageButton>
             </ViewFlipper>
         </RelativeLayout>
     </LinearLayout>
- </ScrollView>
+</ScrollView>

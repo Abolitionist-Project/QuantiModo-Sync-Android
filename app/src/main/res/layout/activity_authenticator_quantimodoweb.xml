@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:focusable="true"
         android:visibility="invisible"
-        android:inputType="none"/>
+        android:inputType="none" />
 
     <WebView
         android:id="@+id/web"

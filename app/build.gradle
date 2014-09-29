@@ -3,8 +3,8 @@ apply plugin: 'com.android.application'
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile 'com.android.support:support-v13:19.+'
-    compile 'com.quantimodo.android.sdk:sdk:1.0'
+    compile 'com.android.support:support-v13:20.0.0'
+    compile 'com.quantimodo.android.sdk:sdk:1.0.1'
     compile 'se.emilsjolander:stickylistheaders:2.5.0'
 
     // ETL libraries
@@ -29,8 +29,8 @@ android {
         applicationId "com.quantimodo.sync"
         minSdkVersion 14
         targetSdkVersion 19
-        versionCode 114
-        versionName "1.1.4"
+        versionCode 115
+        versionName "1.1.5"
     }
     buildTypes {
         release {

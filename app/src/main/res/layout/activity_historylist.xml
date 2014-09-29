@@ -7,5 +7,4 @@
     android:numColumns="1"
     android:padding="8dp"
     android:scrollbarStyle="outsideOverlay"
-    android:verticalSpacing="8dp" >
-</GridView>
+    android:verticalSpacing="8dp"></GridView>

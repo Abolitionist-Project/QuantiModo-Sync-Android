@@ -8,12 +8,11 @@
         <item name="android:selectableItemBackground">@drawable/selector</item>
     </style>
 
-    <style
-        name="Default.WhiteBg" parent="Default">
+    <style name="Default.WhiteBg" parent="Default">
         <item name="android:windowBackground">@android:color/white</item>
     </style>
 
-    <style name="Default.Dialog" parent="@android:style/Theme.Holo.Light.Dialog"/>
+    <style name="Default.Dialog" parent="@android:style/Theme.Holo.Light.Dialog" />
 
     <style name="Default.ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/actionbar_background</item>
