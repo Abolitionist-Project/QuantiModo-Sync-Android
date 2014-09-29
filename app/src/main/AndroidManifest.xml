@@ -34,7 +34,7 @@
             android:name=".SettingsActivity"
             android:theme="@style/Default.WhiteBg"
             android:label="@string/title_preferences"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
@@ -52,7 +52,7 @@
         <activity
             android:name=".WelcomeActivity"
             android:label="Welcome"
-            android:theme="@style/Default.Dialog"/>
+            android:theme="@style/Default.Dialog" />
 
         <service
             android:name=".sync.AppDataSyncService"
@@ -82,6 +82,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>

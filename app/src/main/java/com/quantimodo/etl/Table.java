@@ -1,27 +1,27 @@
 package com.quantimodo.etl;
 
-public interface Table
-{
-	String getName();
+public interface Table {
+    String getName();
 
-	int getFieldCount();
+    int getFieldCount();
 
-	String getFieldType(int field);
-	String getFieldName(int field);
+    String getFieldType(int field);
 
-	int getFieldNumber(CharSequence fieldName);
+    String getFieldName(int field);
 
-	boolean hasField(int fieldNumber);
+    int getFieldNumber(CharSequence fieldName);
 
-	boolean hasField(CharSequence fieldName);
+    boolean hasField(int fieldNumber);
 
-	int getRecordCount();
+    boolean hasField(CharSequence fieldName);
 
-	Object getData(int record, int field);
+    int getRecordCount();
 
-	Object getData(int record, CharSequence fieldName);
+    Object getData(int record, int field);
 
-	String toString();
+    Object getData(int record, CharSequence fieldName);
 
-	String toHTML();
+    String toString();
+
+    String toHTML();
 }

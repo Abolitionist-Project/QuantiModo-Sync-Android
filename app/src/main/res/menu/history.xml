@@ -3,5 +3,5 @@
         android:id="@+id/action_history_sync"
         android:showAsAction="always"
         android:icon="@drawable/ic_action_sync"
-        android:title="@string/action_history_sync"/>
+        android:title="@string/action_history_sync" />
 </menu>
