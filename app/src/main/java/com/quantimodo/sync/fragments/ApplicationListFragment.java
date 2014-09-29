@@ -1,13 +1,12 @@
 package com.quantimodo.sync.fragments;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,8 +29,6 @@ public class ApplicationListFragment extends Fragment {
     private static Adapter adapter;
     private static StickyListHeadersListView listView;
 
-    private Activity activity;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +43,7 @@ public class ApplicationListFragment extends Fragment {
             return null;
         }
 
-        ApplicationData.getCompatibleApplications(activity.getApplicationContext(), new Handler(), new ApplicationData.OnCompatibleApplicationsLoaded() {
+        ApplicationData.getCompatibleApplications(getActivity().getApplicationContext(), new Handler(), new ApplicationData.OnCompatibleApplicationsLoaded() {
             @Override
             public void onComplete() {
                 ApplicationListFragment.update();
@@ -58,12 +55,6 @@ public class ApplicationListFragment extends Fragment {
         initList(view);
 
         return view;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        this.activity = activity;       // Workaround for failing getActivity()
     }
 
     @Override
@@ -110,11 +101,11 @@ public class ApplicationListFragment extends Fragment {
 
             ApplicationData currentApp = Global.applications.get(position);
             if (currentApp.isInstalled) {
-                currentApp.setSyncEnabled(activity, !currentApp.isSyncEnabled());
+                currentApp.setSyncEnabled(getActivity(), !currentApp.isSyncEnabled());
                 adapter.notifyDataSetChanged();
             } else {
                 // Start a generic ACTION_VIEW intent, most likely captured by the Play store, there's no way of knowing whether the user installed the app here or not.
-                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + currentApp.packageName)));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + currentApp.packageName)));
             }
         }
     };
@@ -129,12 +120,12 @@ public class ApplicationListFragment extends Fragment {
             int position = (Integer) view.getTag();
 
             ApplicationData currentApp = Global.applications.get(position);
-            PackageManager packageManager = activity.getPackageManager();
+            PackageManager packageManager = getActivity().getPackageManager();
             try {
                 Intent launchIntent = packageManager.getLaunchIntentForPackage(currentApp.packageName);
-                activity.startActivity(launchIntent);
+                startActivity(launchIntent);
             } catch (Exception e) {
-                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + currentApp.packageName)));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + currentApp.packageName)));
             }
         }
     };
@@ -154,8 +145,8 @@ public class ApplicationListFragment extends Fragment {
         }
 
         public Adapter() {
-            super(activity, R.layout.fragment_applicationlist_row, Global.applications);
-            inflater = LayoutInflater.from(activity);
+            super(getActivity(), R.layout.fragment_applicationlist_row, Global.applications);
+            inflater = LayoutInflater.from(getActivity());
         }
 
         @Override

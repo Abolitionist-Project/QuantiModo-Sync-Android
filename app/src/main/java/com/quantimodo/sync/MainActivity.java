@@ -1,10 +1,10 @@
 package com.quantimodo.sync;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,7 +13,7 @@ import com.quantimodo.sync.fragments.ApplicationListFragment;
 //TODO 10.1/7 inch layouts
 //TODO Look into Linux user groups to see if we can use a file monitor to automatically get changes
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
     public static final int FRAGMENT_APPLICATIONS = 1;
 
     private static final int REQUEST_WELCOME = 100;
@@ -68,45 +68,31 @@ public class MainActivity extends Activity {
         }
     }
 
-	/*
-    private void initDrawer() {
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer, R.string.app_name, R.string.app_name) {
-            public void onDrawerClosed(View view) {
-            }
-
-            public void onDrawerOpened(View drawerView) {
-            }
-        };
-        drawerLayout.setDrawerListener(drawerToggle);
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
-
-        TextView tvApplications = (TextView) findViewById(R.id.tvApplications);
-        tvApplications.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setCurrentFragment(MainActivity.this, FRAGMENT_APPLICATIONS, FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                drawerLayout.closeDrawer(Gravity.LEFT);
-            }
-        });
-    }
-*/
-
-    public static void setCurrentFragment(Activity activity, int fragment, int animation) {
+    /**
+     * Set the fragment to be displayed in the given activity.
+     *
+     * @param activity  The activity to show the fragment in.
+     * @param fragment  The identifier of the fragment to show.
+     * @param animation An optional animation to use for the transition, or -1 for no transition.
+     */
+    public static void setCurrentFragment(FragmentActivity activity, int fragment, int animation) {
         Fragment newFragment;
+
+        Fragment currentFragment = activity.getSupportFragmentManager().findFragmentById(R.id.mainFragment);
 
         switch (fragment) {
             case FRAGMENT_APPLICATIONS:
+                if (currentFragment != null && currentFragment instanceof ApplicationListFragment) {
+                    return;
+                }
                 newFragment = new ApplicationListFragment();
                 break;
             default:
                 return;
         }
 
-        FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
+        // If we get here a new fragment has been created for us, so it's time to show it.
+        FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.mainFragment, newFragment);
         if (animation != -1) {
             fragmentTransaction.setTransition(animation);
