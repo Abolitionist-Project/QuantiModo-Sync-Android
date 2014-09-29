@@ -5,8 +5,7 @@ import com.quantimodo.etl.DatabaseView;
 
 import java.util.ArrayList;
 
-public interface Converter
-{
-	ArrayList<MeasurementSet> convert(DatabaseView databaseView);
+public interface Converter {
+    ArrayList<MeasurementSet> convert(DatabaseView databaseView);
 }
 

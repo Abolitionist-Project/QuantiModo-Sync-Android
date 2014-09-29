@@ -4,8 +4,7 @@
         <shape android:shape="rectangle">
             <corners
                 android:bottomLeftRadius="2dp"
-                android:bottomRightRadius="2dp">
-            </corners>
+                android:bottomRightRadius="2dp"></corners>
             <solid android:color="@color/card_shadow" />
         </shape>
     </item>

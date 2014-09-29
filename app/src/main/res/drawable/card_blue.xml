@@ -2,9 +2,7 @@
     <!-- Bottom Line -->
     <item>
         <shape android:shape="rectangle">
-            <corners
-                android:radius="2dp">
-            </corners>
+            <corners android:radius="2dp"></corners>
             <solid android:color="@color/card_blue_background" />
         </shape>
     </item>

@@ -1,14 +1,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
-        android:title="@string/pref_header_general">
+    <PreferenceCategory android:title="@string/pref_header_general">
         <Preference
             android:key="quantimodoAccount"
             android:title="@string/pref_account" />
-   </PreferenceCategory>
+    </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/pref_header_synchronization">
+    <PreferenceCategory android:title="@string/pref_header_synchronization">
         <CheckBoxPreference
             android:key="syncAppData"
             android:title="@string/pref_sync_appdata"

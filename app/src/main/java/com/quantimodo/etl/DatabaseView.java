@@ -1,24 +1,23 @@
 package com.quantimodo.etl;
 
-public interface DatabaseView
-{
-	int getTableCount();
+public interface DatabaseView {
+    int getTableCount();
 
-	int getTableNumber(CharSequence tableName);
+    int getTableNumber(CharSequence tableName);
 
-	String getTableName(int table);
+    String getTableName(int table);
 
-	boolean hasTable(CharSequence tableName);
+    boolean hasTable(CharSequence tableName);
 
-	boolean hasTable(int tableName);
+    boolean hasTable(int tableName);
 
-	Table getTable(int table);
+    Table getTable(int table);
 
-	Table getTable(CharSequence tableName);
-	
-	void setTable(Table table, CharSequence tableName);
+    Table getTable(CharSequence tableName);
 
-	String toString();
+    void setTable(Table table, CharSequence tableName);
 
-	String toHTML();
+    String toString();
+
+    String toHTML();
 }

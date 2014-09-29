@@ -5,67 +5,66 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+
 import com.quantimodo.sync.R;
 import com.quantimodo.sync.sync.AppDataSyncService;
 
-public class SourcesFragment extends Fragment
-{
-	public static final String[] PAGER_TITLES = {"APPLICATIONS"};
+public class SourcesFragment extends Fragment {
+    public static final String[] PAGER_TITLES = {"APPLICATIONS"};
 
-	@Override public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{
-		super.onCreateView(inflater, container, savedInstanceState);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
-		if (container == null)
-		{
-			return null;
-		}
+        if (container == null) {
+            return null;
+        }
 
-		View view = inflater.inflate(R.layout.fragment_sources, container, false);
+        View view = inflater.inflate(R.layout.fragment_sources, container, false);
 
-		initActionBar();
-		//initViewPager(view);
+        initActionBar();
+        //initViewPager(view);
 
-		return view;
-	}
+        return view;
+    }
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-	{
-		inflater.inflate(R.menu.sources, menu);
-	}
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.sources, menu);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		int id = item.getItemId();
-		
-		if(id == R.id.action_sync) {
-			Intent newIntent = new Intent(getActivity(), AppDataSyncService.class);
-			getActivity().startService(newIntent);
-			return true;
-		}
-		else {
-			return super.onOptionsItemSelected(item);
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
-	public void initActionBar()
-	{
-		ActionBar actionBar = getActivity().getActionBar();
-		actionBar.setTitle(R.string.title_sources);
-	}
+        if (id == R.id.action_sync) {
+            Intent newIntent = new Intent(getActivity(), AppDataSyncService.class);
+            getActivity().startService(newIntent);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void initActionBar() {
+        ActionBar actionBar = getActivity().getActionBar();
+        actionBar.setTitle(R.string.title_sources);
+    }
 
 	/*
-	 *  Init ViewPager related items, such as the PagerAdapter and tabs.
+     *  Init ViewPager related items, such as the PagerAdapter and tabs.
 
 	private void initViewPager(final View view)
 	{
@@ -79,33 +78,27 @@ public class SourcesFragment extends Fragment
 		tabs.setViewPager(viewPager);
 	}*/
 
-	public class PagerAdapter extends FragmentPagerAdapter
-	{
-		public PagerAdapter()
-		{
-			super(getChildFragmentManager());
-		}
+    public class PagerAdapter extends FragmentPagerAdapter {
+        public PagerAdapter() {
+            super(getChildFragmentManager());
+        }
 
-		public CharSequence getPageTitle(int position)
-		{
-			return PAGER_TITLES[position];
-		}
+        public CharSequence getPageTitle(int position) {
+            return PAGER_TITLES[position];
+        }
 
-		@Override
-		public int getCount()
-		{
-			return PAGER_TITLES.length;
-		}
+        @Override
+        public int getCount() {
+            return PAGER_TITLES.length;
+        }
 
-		@Override
-		public Fragment getItem(int position)
-		{
-			switch (position)
-			{
-			case 0:
-				return new ApplicationListFragment();
-			}
-			return null;
-		}
-	}
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    return new ApplicationListFragment();
+            }
+            return null;
+        }
+    }
 }

@@ -35,13 +35,13 @@
         <DataTypes aspectsOfMood="true"></DataTypes>
     </App>
 
-    <App label="MedHelper" packageName="com.earthflare.android.medhelper.lite" developer="EARTHFLARE"
-        dataFile="/internal/databases/medtracker" rootRequired="true">
+    <App label="MedHelper" packageName="com.earthflare.android.medhelper.lite"
+        developer="EARTHFLARE" dataFile="/internal/databases/medtracker" rootRequired="true">
         <DataTypes medicationConsumption="true"></DataTypes>
     </App>
 
-    <App label="MedHelper Pro" packageName="com.earthflare.android.medhelper.pro" developer="EARTHFLARE"
-        dataFile="/internal/databases/medtracker" rootRequired="true">
+    <App label="MedHelper Pro" packageName="com.earthflare.android.medhelper.pro"
+        developer="EARTHFLARE" dataFile="/internal/databases/medtracker" rootRequired="true">
         <DataTypes medicationConsumption="true"></DataTypes>
     </App>
 
@@ -55,8 +55,9 @@
         <DataTypes medicationConsumption="true"></DataTypes>
     </App>
 
-    <App label="myFitnessCompanion" packageName="com.myfitnesscompanion" developer="myFitnessCompanion"
-        dataFile="/internal/databases/myfitnesscompanion" rootRequired="true">
+    <App label="myFitnessCompanion" packageName="com.myfitnesscompanion"
+        developer="myFitnessCompanion" dataFile="/internal/databases/myfitnesscompanion"
+        rootRequired="true">
         <DataTypes weight="true" bloodPressure="true"></DataTypes>
     </App>
 
@@ -70,8 +71,8 @@
         <DataTypes qualityOfSleep="true" hoursOfSleep="true"></DataTypes>
     </App>
 
-    <App label="T2 Mood Tracker" packageName="com.t2.vas" developer="T2" dataFile="/internal/databases/VAS_DATA"
-        rootRequired="true">
+    <App label="T2 Mood Tracker" packageName="com.t2.vas" developer="T2"
+        dataFile="/internal/databases/VAS_DATA" rootRequired="true">
         <DataTypes aspectsOfMood="true"></DataTypes>
     </App>
 </CompatibleApps>

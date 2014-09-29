@@ -7,79 +7,66 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import com.quantimodo.sync.fragments.ApplicationListFragment;
 
 //TODO 10.1/7 inch layouts
 //TODO Look into Linux user groups to see if we can use a file monitor to automatically get changes
 
-public class MainActivity extends Activity
-{
-	public static final int FRAGMENT_APPLICATIONS = 1;
+public class MainActivity extends Activity {
+    public static final int FRAGMENT_APPLICATIONS = 1;
 
-	private static final int REQUEST_WELCOME = 100;
+    private static final int REQUEST_WELCOME = 100;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-		Global.init(this);
+        Global.init(this);
 
-		if (Global.qmAccountName == null)
-		{
-			Intent intent = new Intent(this, WelcomeActivity.class);
-			startActivityForResult(intent, REQUEST_WELCOME);
-		}
-		else
-		{
-			setCurrentFragment(this, FRAGMENT_APPLICATIONS, -1);
-		}
-	}
+        if (Global.qmAccountName == null) {
+            Intent intent = new Intent(this, WelcomeActivity.class);
+            startActivityForResult(intent, REQUEST_WELCOME);
+        } else {
+            setCurrentFragment(this, FRAGMENT_APPLICATIONS, -1);
+        }
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		int id = item.getItemId();
-		Intent openPrefsIntent = null;
-		
-		if(id == R.id.action_history) {
-			openPrefsIntent = new Intent(this, HistoryActivity.class);
-			startActivity(openPrefsIntent);
-			return true;
-		}
-		else if(id == R.id.action_settings) {
-			openPrefsIntent = new Intent(this, SettingsActivity.class);
-			startActivity(openPrefsIntent);
-			return true;
-		}
-		else {
-			return super.onOptionsItemSelected(item);
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        Intent openPrefsIntent = null;
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		if(requestCode == REQUEST_WELCOME)
-		{
-			if(resultCode == RESULT_OK)
-			{
-				setCurrentFragment(this, FRAGMENT_APPLICATIONS, -1);
-			}
-		}
-		else
-		{
-			super.onActivityResult(requestCode, resultCode, data);
-		}
-	}
+        if (id == R.id.action_history) {
+            openPrefsIntent = new Intent(this, HistoryActivity.class);
+            startActivity(openPrefsIntent);
+            return true;
+        } else if (id == R.id.action_settings) {
+            openPrefsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(openPrefsIntent);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_WELCOME) {
+            if (resultCode == RESULT_OK) {
+                setCurrentFragment(this, FRAGMENT_APPLICATIONS, -1);
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
 	/*
     private void initDrawer() {
@@ -108,30 +95,27 @@ public class MainActivity extends Activity
     }
 */
 
-	public static void setCurrentFragment(Activity activity, int fragment, int animation)
-	{
-		Fragment newFragment;
+    public static void setCurrentFragment(Activity activity, int fragment, int animation) {
+        Fragment newFragment;
 
-		switch (fragment)
-		{
-		case FRAGMENT_APPLICATIONS:
-			newFragment = new ApplicationListFragment();
-			break;
-		default:
-			return;
-		}
+        switch (fragment) {
+            case FRAGMENT_APPLICATIONS:
+                newFragment = new ApplicationListFragment();
+                break;
+            default:
+                return;
+        }
 
-		FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
-		fragmentTransaction.replace(R.id.mainFragment, newFragment);
-		if (animation != -1)
-		{
-			fragmentTransaction.setTransition(animation);
-		}
-		fragmentTransaction.commit();
-	}
+        FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.mainFragment, newFragment);
+        if (animation != -1) {
+            fragmentTransaction.setTransition(animation);
+        }
+        fragmentTransaction.commit();
+    }
 
 /*
-	public static void lockDrawer(boolean lock)
+    public static void lockDrawer(boolean lock)
     {
         if(lock)
         {
