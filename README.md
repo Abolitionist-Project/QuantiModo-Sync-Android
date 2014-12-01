@@ -22,4 +22,4 @@ Tracking apps that are currently supported include:
 - Data Habit
 - More to come!
 
-If you want to add an app, you just need to make a converter for it. A converter transforms the data from a app's database into a form that can be posted to the QuantiModo API. Email info@quantimo.do to find out more. 
+If you want to add an app, you just need to make a converter for it. A converter transforms the data from a tracking app's database into a form that can be posted to the QuantiModo API. Email info@quantimo.do to find out more. 
