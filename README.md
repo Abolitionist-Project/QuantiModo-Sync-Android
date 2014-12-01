@@ -22,8 +22,4 @@ Tracking apps that are currently supported include:
 - Data Habit
 - More to come!
 
-Want to add an app?
-
-Reader - Takes data from a specific file format and stores it in memory.  
-
-You just need to make a converter for it. A converter ransforms the data which has been read into a form that can be posted to the QuantiModo API. 
+If you want to add an app, you just need to make a converter for it. A converter transforms the data from a app's database into a form that can be posted to the QuantiModo API. Email info@quantimo.do to find out more. 
