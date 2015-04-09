@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.quantimodo.sync.fragments.ApplicationListFragment;
+import com.uservoice.uservoicesdk.Config;
+import com.uservoice.uservoicesdk.UserVoice;
 
 //TODO 10.1/7 inch layouts
 //TODO Look into Linux user groups to see if we can use a file monitor to automatically get changes
@@ -24,6 +26,11 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         Global.init(this);
+
+        //Init uservoice
+        Config config = new Config("quantimodo.uservoice.com");
+        config.setForumId(211661);
+        UserVoice.init(config, this);
 
         if (Global.qmAccountName == null) {
             Intent intent = new Intent(this, WelcomeActivity.class);

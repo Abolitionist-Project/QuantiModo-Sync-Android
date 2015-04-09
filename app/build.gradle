@@ -9,11 +9,14 @@ dependencies {
 
     // ETL libraries
     compile 'net.sf.opencsv:opencsv:2.3'
+
+    //UserVoice sdk https://github.com/uservoice/uservoice-android-sdk
+    compile 'com.uservoice:uservoice-android-sdk:+'
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "20.0.0"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
 
     signingConfigs {
         release {
@@ -34,7 +37,7 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
+//            runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig android.signingConfigs.release
         }
