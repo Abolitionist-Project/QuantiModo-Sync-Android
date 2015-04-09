@@ -19,6 +19,7 @@ import android.view.MenuItem;
 
 import com.quantimodo.android.sdk.Quantimodo;
 import com.quantimodo.sync.receivers.SyncTimeReceiver;
+import com.uservoice.uservoicesdk.UserVoice;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -89,6 +90,42 @@ public class SettingsActivity extends PreferenceActivity {
                 Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
                 intent.putExtra(Settings.EXTRA_AUTHORITIES, authorities);
                 startActivity(intent);
+                return true;
+            }
+        });
+
+        preference = findPreference("prefUserVoiceHelp");
+        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                UserVoice.launchUserVoice(SettingsActivity.this);
+                return true;
+            }
+        });
+
+        preference = findPreference("prefUserVoiceFeedback");
+        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                UserVoice.launchForum(SettingsActivity.this);
+                return true;
+            }
+        });
+
+        preference = findPreference("prefUserVoiceContact");
+        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                UserVoice.launchContactUs(SettingsActivity.this);
+                return true;
+            }
+        });
+
+        preference = findPreference("prefUserVoiceIdea");
+        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                UserVoice.launchPostIdea(SettingsActivity.this);
                 return true;
             }
         });

@@ -27,4 +27,26 @@
             android:defaultValue="true" />
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/pref_header_feedback">
+        <Preference
+            android:key="prefUserVoiceHelp"
+            android:title="@string/pref_user_voice_help"
+            />
+        <Preference
+            android:key="prefUserVoiceFeedback"
+            android:title="@string/pref_user_voice_feedback"
+            />
+
+        <Preference
+            android:key="prefUserVoiceContact"
+            android:title="@string/pref_user_voice_contact"
+            />
+
+        <Preference
+            android:key="prefUserVoiceIdea"
+            android:title="@string/pref_user_voice_idea"
+            />
+    </PreferenceCategory>
+
 </PreferenceScreen>
