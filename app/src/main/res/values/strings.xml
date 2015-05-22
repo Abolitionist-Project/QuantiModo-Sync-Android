@@ -53,4 +53,12 @@
 
     <string name="pref_header_mood">Mood</string>
     <string name="pref_mood_schedule">Ask for your mood</string>
+    <string name="button_login">Log in</string>
+    <string name="tutorial_message_no_root">Root unavailable, please check link bellow to get root access on your phone</string>
+    <string name="tutorial_message_access_denied">QuantiModo Sync was denied root access.</string>
+    <string name="tutorial_message_access_granted">Root available, access granted</string>
+    <string name="tutorial_message_root_avail">Root available...</string>
+    <string name="auth_logout">Log out?</string>
+    <string name="dialog_ok">ok</string>
+    <string name="dialog_cancel">Cancel</string>
 </resources>

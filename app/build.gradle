@@ -30,6 +30,9 @@ dependencies {
     compile 'com.squareup.dagger:dagger:1.2.2'
     apt 'com.squareup.dagger:dagger-compiler:1.2.2'
 
+    //ButterKnife ViewInjection http://jakewharton.github.io/butterknife/
+    compile 'com.jakewharton:butterknife:6.1.0'
+
     //UserVoice sdk https://github.com/uservoice/uservoice-android-sdk
     compile 'com.uservoice:uservoice-android-sdk:+'
 }

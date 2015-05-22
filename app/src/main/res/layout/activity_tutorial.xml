@@ -25,7 +25,7 @@
                     style="@style/sectionHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="About QuantiModo Sync"></TextView>
+                    android:text="About QuantiModo Sync"/>
 
                 <TextView
                     android:paddingTop="8dp"
@@ -34,13 +34,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="QuantiModo Sync lets you sync your favorite life tracking applications with QuantiModo, where you'll be able to use your data to gain valuable insights."
-                    android:textColor="@android:color/black"></TextView>
+                    android:textColor="@android:color/black"/>
 
                 <TextView
                     style="@style/sectionHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Root"></TextView>
+                    android:text="Root"/>
 
                 <TextView
                     android:paddingTop="8dp"
@@ -50,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Root access is required to access protected files, QuantiModo Sync won't function without it. Tap the icon in the lower right of this dialog to continue, make sure you grant QuantiModo Sync root access when asked."
-                    android:textColor="@android:color/black"></TextView>
+                    android:textColor="@android:color/black"/>
             </LinearLayout>
 
             <!--  System Sanity -->
@@ -64,7 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Root"
-                    android:layout_alignParentTop="true"></TextView>
+                    android:layout_alignParentTop="true"/>
 
                 <TextView
                     android:id="@+id/tvRootResult"
@@ -74,10 +74,11 @@
                     android:paddingTop="8dp"
                     android:paddingRight="16dp"
                     android:paddingLeft="16dp"
-                    android:text="Checking..."></TextView>
+                    android:text="Checking..."/>
             </RelativeLayout>
 
-            <!-- Google Account -->
+            <!-- QM Account -->
+
             <LinearLayout
                 android:id="@+id/lnQuantimodoAccounts"
                 android:layout_width="wrap_content"
@@ -88,7 +89,7 @@
                     style="@style/sectionHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Connect to QuantiModo"></TextView>
+                    android:text="Connect to QuantiModo"/>
 
                 <TextView
                     android:paddingTop="8dp"
@@ -96,22 +97,26 @@
                     android:paddingLeft="16dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select your QuantiModo account below, your tracking apps will sync to this account."
-                    android:textColor="@android:color/black"></TextView>
+                    android:text="You need to login in your QuantiModo account below, your tracking apps will sync to this account."
+                    android:textColor="@android:color/black"/>
 
-                <TextView
-                    style="@style/sectionHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Accounts"></TextView>
+                <Button
+                    android:id="@+id/btLogIn"
+                    android:layout_margin="10dp"
+                    android:text="@string/button_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
             </LinearLayout>
+
+
         </ViewFlipper>
 
         <View
             android:layout_width="wrap_content"
             android:layout_height="2dp"
             android:background="#FF33B5E5"
-            android:layout_weight="1"></View>
+            android:layout_weight="1"/>
 
         <RelativeLayout
             android:id="@+id/relative_buttons"
@@ -133,28 +138,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector"
-                    android:src="@drawable/ab_next"></ImageButton>
+                    android:src="@drawable/ab_next"/>
 
                 <ImageButton
                     android:id="@+id/button_browser"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector"
-                    android:src="@drawable/ab_browser"></ImageButton>
+                    android:src="@drawable/ab_browser"/>
 
                 <ImageButton
                     android:id="@+id/button_playstore"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector"
-                    android:src="@drawable/ab_playstore"></ImageButton>
+                    android:src="@drawable/ab_playstore"/>
 
                 <ImageButton
                     android:id="@+id/button_retry"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector"
-                    android:src="@drawable/ab_refresh"></ImageButton>
+                    android:src="@drawable/ab_refresh"/>
             </ViewFlipper>
         </RelativeLayout>
     </LinearLayout>

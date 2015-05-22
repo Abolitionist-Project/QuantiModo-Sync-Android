@@ -1,17 +1,14 @@
 package com.quantimodo.sync.receivers;
 
-import android.accounts.Account;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
-
-import com.quantimodo.android.sdk.Quantimodo;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.fragments.ApplicationListFragment;
 import com.quantimodo.sync.model.ApplicationData;
+import com.quantimodo.sync.sync.SyncHelper;
 
 /*
  * BroadcastReceiver to monitor installed/uninstalled packages to refresh
@@ -40,14 +37,12 @@ public class PackagesChangedReceiver extends BroadcastReceiver {
                 String currentSyncingPackages = prefs.getString("syncingPackages", "");
                 currentSyncingPackages = currentSyncingPackages.replace(packageName + ",", "");
 
-                Account account = Quantimodo.getAccount(context);
-                if (account != null) {
-                    if (currentSyncingPackages.length() == 0 && account != null) {
-                        ContentResolver.setSyncAutomatically(account, "com.quantimodo.sync.content-appdata", false);
-                    } else {
-                        ContentResolver.setSyncAutomatically(account, "com.quantimodo.sync.content-appdata", true);
-                    }
+                if (currentSyncingPackages.length() == 0) {
+                    SyncHelper.unscheduleSync(context);
+                } else {
+                    SyncHelper.scheduleSync(context);
                 }
+
                 prefs.edit().putString("syncingPackages", currentSyncingPackages).commit();
             }
         }

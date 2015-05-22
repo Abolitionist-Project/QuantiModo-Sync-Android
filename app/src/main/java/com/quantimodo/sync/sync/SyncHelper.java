@@ -48,4 +48,7 @@ public class SyncHelper {
         context.sendBroadcast(intent);
     }
 
+    public static void scheduleSync(Context context, long interval) {
+        scheduleSync(context);
+    }
 }

@@ -1,21 +1,13 @@
 package com.quantimodo.sync.receivers;
 
-import android.accounts.Account;
-import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.BatteryManager;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
-
-import com.quantimodo.android.sdk.Quantimodo;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.Log;
+import com.quantimodo.sync.sync.SyncHelper;
 
 public class SyncTimeReceiver extends BroadcastReceiver {
     public static final int ALARM_REQUEST_CODE = 1337;
@@ -72,33 +64,28 @@ public class SyncTimeReceiver extends BroadcastReceiver {
     }
 
     public static void setAlarm(Context context, int syncInterval) {
-        Account qmAccount = Quantimodo.getAccount(context);
-        if (qmAccount != null) {
-            long interval = 0;
-            switch (syncInterval) {
-                case INTERVAL_MANUAL:
-                    ContentResolver.removePeriodicSync(qmAccount, "com.quantimodo.sync.appdata.provider", new Bundle());
-                    return;
-                case INTERVAL_HOURLY:
-                    interval = INTERVAL_HOURLY_MILLIS;
-                    break;
-                case INTERVAL_TWICE_DAILY:
-                    interval = INTERVAL_TWICE_DAILY_MILLIS;
-                    break;
-                case INTERVAL_DAILY:
-                    interval = INTERVAL_DAILY_MILLIS;
-                    break;
-                case INTERVAL_WEEKLY:
-                    interval = INTERVAL_WEEKLY_MILLIS;
-                    break;
-                case INTERVAL_DEBUG:
-                    interval = INTERVAL_DEBUG_MILLIS;
-                    break;
-            }
-
-            Log.i("Set " + qmAccount.name + " sync every " + interval);
-            ContentResolver.setSyncAutomatically(qmAccount, "com.quantimodo.sync.appdata.provider", true);
-            ContentResolver.addPeriodicSync(qmAccount, "com.quantimodo.sync.appdata.provider", new Bundle(), interval / 1000);
+        long interval = 0;
+        switch (syncInterval) {
+            case INTERVAL_MANUAL:
+                SyncHelper.unscheduleSync(context);
+                return;
+            case INTERVAL_HOURLY:
+                interval = INTERVAL_HOURLY_MILLIS;
+                break;
+            case INTERVAL_TWICE_DAILY:
+                interval = INTERVAL_TWICE_DAILY_MILLIS;
+                break;
+            case INTERVAL_DAILY:
+                interval = INTERVAL_DAILY_MILLIS;
+                break;
+            case INTERVAL_WEEKLY:
+                interval = INTERVAL_WEEKLY_MILLIS;
+                break;
+            case INTERVAL_DEBUG:
+                interval = INTERVAL_DEBUG_MILLIS;
+                break;
         }
+
+        SyncHelper.scheduleSync(context,interval);
     }
 }

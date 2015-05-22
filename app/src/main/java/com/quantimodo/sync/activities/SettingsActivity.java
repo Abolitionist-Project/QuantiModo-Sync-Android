@@ -1,26 +1,24 @@
-package com.quantimodo.sync;
+package com.quantimodo.sync.activities;
 
 import android.accounts.Account;
 import android.app.ActionBar;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.app.AlertDialog;
+import android.content.*;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
-import android.provider.Settings;
+import android.preference.*;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
-
 import com.quantimodo.android.sdk.Quantimodo;
+import com.quantimodo.sync.AuthHelper;
+import com.quantimodo.sync.Global;
+import com.quantimodo.sync.QApp;
+import com.quantimodo.sync.R;
 import com.quantimodo.sync.receivers.SyncTimeReceiver;
+import com.quantimodo.sync.sync.SyncHelper;
 import com.uservoice.uservoicesdk.UserVoice;
 
+import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -30,12 +28,16 @@ public class SettingsActivity extends PreferenceActivity {
     private static CheckBoxPreference cbWiFiOnly;
     private static CheckBoxPreference cbChargingOnly;
 
+    @Inject
+    AuthHelper authHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        QApp.inject(this);
         addPreferencesFromResource(R.xml.settings);
 
         initGeneralPreferences();
@@ -82,17 +84,42 @@ public class SettingsActivity extends PreferenceActivity {
 
     void initGeneralPreferences() {
         Preference preference = findPreference("quantimodoAccount");
-        preference.setSummary(Quantimodo.getAccount(this.getApplicationContext()).name);
-        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                String[] authorities = {"com.quantimodo.sync.content-appdata"};
-                Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
-                intent.putExtra(Settings.EXTRA_AUTHORITIES, authorities);
-                startActivity(intent);
+
+        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener()
+        {
+            @Override public boolean onPreferenceClick(Preference preference)
+            {
+                if (!authHelper.isLoggedIn()){
+
+                    Intent auth = new Intent(SettingsActivity.this,QuantimodoWebAuthenticatorActivity.class);
+                    startActivity(auth);
+                }  else {
+                    new AlertDialog.Builder(SettingsActivity.this)
+                            .setMessage(R.string.auth_logout)
+                            .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    authHelper.logOut();
+                                    initGeneralPreferences();
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).create().show();
+                }
                 return true;
             }
         });
+
+        if(authHelper.isLoggedIn()) {
+            preference.setSummary("Logged in");
+        } else {
+            preference.setSummary("Not logged in");
+        }
 
         preference = findPreference("prefUserVoiceHelp");
         preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -133,7 +160,7 @@ public class SettingsActivity extends PreferenceActivity {
 
     void initSynchronizationPreferences() {
         Account qmAccount = Quantimodo.getAccount(this.getApplicationContext());
-        boolean syncAutomatically = ContentResolver.getSyncAutomatically(qmAccount, "com.quantimodo.sync.content-appdata");
+        boolean syncAutomatically = SyncHelper.isSync(this);
 
         CheckBoxPreference checkBoxPreference = (CheckBoxPreference) findPreference("syncAppData");
         checkBoxPreference.setOnPreferenceChangeListener(onSyncAppDataChanged);
@@ -187,7 +214,11 @@ public class SettingsActivity extends PreferenceActivity {
 
             boolean syncAutomatically = (Boolean) o;
 
-            ContentResolver.setSyncAutomatically(Quantimodo.getAccount(preference.getContext()), "com.quantimodo.sync.content-appdata", syncAutomatically);
+            if (syncAutomatically){
+                SyncHelper.scheduleSync(preference.getContext());
+            } else {
+                SyncHelper.unscheduleSync(preference.getContext());
+            }
 
             lpSyncInterval.setEnabled(syncAutomatically);
             cbWiFiOnly.setEnabled(syncAutomatically);

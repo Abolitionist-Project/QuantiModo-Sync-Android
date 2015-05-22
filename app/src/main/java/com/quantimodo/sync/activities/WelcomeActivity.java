@@ -1,43 +1,58 @@
-package com.quantimodo.sync;
+package com.quantimodo.sync.activities;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
-
-import com.quantimodo.android.sdk.Quantimodo;
-import com.quantimodo.android.sdk.QuantimodoApi;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+import com.quantimodo.sync.AuthHelper;
+import com.quantimodo.sync.Global;
+import com.quantimodo.sync.Log;
+import com.quantimodo.sync.R;
 import com.stericson.RootTools.RootTools;
 
+import javax.inject.Inject;
+
 public class WelcomeActivity extends Activity {
-    private ViewFlipper viewFlipper;
-    private ViewFlipper buttonFlipper;
-    private ImageButton btNext;
-    private ImageButton btBrowser;
-    private ImageButton btPlaystore;
-    private ImageButton btRetry;
+
+    @InjectView(R.id.viewFlipper)
+    ViewFlipper viewFlipper;
+
+    @InjectView(R.id.buttonFlipper)
+    ViewFlipper buttonFlipper;
+
+    @InjectView(R.id.button_next)
+    ImageButton btNext;
+
+    @InjectView(R.id.button_browser)
+    ImageButton btBrowser;
+
+    @InjectView(R.id.button_retry)
+    ImageButton btRetry;
 
     //Page 2
-    private TextView tvRootResult;
+    @InjectView(R.id.tvRootResult)
+    TextView tvRootResult;
 
     //Page 3
-    private LinearLayout lnQuantimodoAccounts;
+    @InjectView(R.id.btLogIn)
+    Button mLoginButton;
 
-    private String selectedAccount;
+    private boolean rootAvailable;
+    private boolean rootAccess;
+
+    @Inject
+    AuthHelper mAuthHelper;
 
     private int currentPage = 0;
 
@@ -45,29 +60,22 @@ public class WelcomeActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
-
+        ButterKnife.inject(this);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
 
-        tvRootResult = (TextView) findViewById(R.id.tvRootResult);
 
-        lnQuantimodoAccounts = (LinearLayout) findViewById(R.id.lnQuantimodoAccounts);
-
-        viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper);
-
-        buttonFlipper = (ViewFlipper) findViewById(R.id.buttonFlipper);
         buttonFlipper.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         buttonFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
 
-        btRetry = (ImageButton) findViewById(R.id.button_retry);
         btRetry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkSystem();
             }
         });
-        btBrowser = (ImageButton) findViewById(R.id.button_browser);
+
         btBrowser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,7 +87,7 @@ public class WelcomeActivity extends Activity {
                 WelcomeActivity.this.finish();
             }
         });
-        btNext = (ImageButton) findViewById(R.id.button_next);
+
         btNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,43 +98,34 @@ public class WelcomeActivity extends Activity {
                     viewFlipper.setInAnimation(AnimationUtils.loadAnimation(WelcomeActivity.this, R.anim.flipper_next_in));
                     checkSystem();
                 } else if (currentPage == 2) {
-                    btNext.setVisibility(View.GONE);
+                    btNext.setVisibility(View.INVISIBLE);
+                    btNext.setEnabled(false);
                 }
 
                 viewFlipper.setDisplayedChild(currentPage);
             }
         });
 
-        getAccountNames();
     }
 
-    private void getAccountNames() {
-        Account[] accounts = Quantimodo.getAccounts(this.getApplicationContext());
+    @OnClick(R.id.btLogIn)
+    public void onLogginButtonClick(){
+        Intent intent = new Intent(this,QuantimodoWebAuthenticatorActivity.class);
+        startActivityForResult(intent,QuantimodoWebAuthenticatorActivity.REQUEST_CODE);
+    }
 
-        final String[] names = new String[accounts.length];
-        LayoutInflater inflater = getLayoutInflater();
-        for (int i = 0; i < names.length; i++) {
-            names[i] = accounts[i].name;
-            View newView = inflater.inflate(R.layout.activity_tutorial_accounts_row, null);
-            Button accountButton = (Button) newView.findViewById(R.id.btAccount);
-            accountButton.setId(i);
-            accountButton.setTag(names[i]);
-            accountButton.setText(names[i]);
-            accountButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    selectedAccount = (String) v.getTag();
-                    connectToAccount();
-                }
-            });
-            lnQuantimodoAccounts.addView(newView, i + 3);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == QuantimodoWebAuthenticatorActivity.REQUEST_CODE && resultCode == RESULT_OK){
+            mLoginButton.setEnabled(false);
+            Global.init(this);
+            setResult(RESULT_OK);
+            finish();
         }
     }
 
-    private boolean rootAvailable;
-    private boolean rootAccess;
-
     private void checkSystem() {
+        btNext.setVisibility(View.GONE);
         final Handler handler = new Handler();
         Runnable run = new Runnable() {
             @Override
@@ -137,7 +136,7 @@ public class WelcomeActivity extends Activity {
                         @Override
                         public void run() {
                             tvRootResult.setTextColor(0xFFFFBB33);
-                            tvRootResult.setText("Root available...");
+                            tvRootResult.setText(R.string.tutorial_message_root_avail);
 
                         }
                     });
@@ -149,7 +148,7 @@ public class WelcomeActivity extends Activity {
                             @Override
                             public void run() {
                                 tvRootResult.setTextColor(0xFFFFBB33);
-                                tvRootResult.setText("Root available, access granted");
+                                tvRootResult.setText(R.string.tutorial_message_access_granted);
                             }
                         });
                     } else {
@@ -158,7 +157,7 @@ public class WelcomeActivity extends Activity {
                             @Override
                             public void run() {
                                 tvRootResult.setTextColor(0xffff0000);
-                                tvRootResult.setText("QuantiModo Sync was denied root access.");
+                                tvRootResult.setText(R.string.tutorial_message_access_denied);
                             }
                         });
                     }
@@ -174,7 +173,8 @@ public class WelcomeActivity extends Activity {
                             // Show refresh button
                             buttonFlipper.setDisplayedChild(3);
                         } else {
-                            // Show browser button for more root info
+                            tvRootResult.setTextColor(0xffff0000);
+                            tvRootResult.setText(R.string.tutorial_message_no_root);
                             buttonFlipper.setDisplayedChild(1);
                         }
                     }
@@ -182,25 +182,5 @@ public class WelcomeActivity extends Activity {
             }
         };
         new Thread(run).start();
-    }
-
-    private void connectToAccount() {
-        QuantimodoApi qmClient = QuantimodoApi.getInstance();
-        Account account = Quantimodo.getAccount(WelcomeActivity.this.getApplicationContext(), selectedAccount);
-        qmClient.getAccessToken(WelcomeActivity.this, account, Global.QM_ID, Global.QM_SECRET, Global.QM_SCOPES, new QuantimodoApi.OnAuthenticationDoneListener() {
-            @Override
-            public void onSuccess(String authenticationToken) {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WelcomeActivity.this);
-                prefs.edit().putString("qmAccountName", selectedAccount).commit();
-                Global.init(WelcomeActivity.this);
-                WelcomeActivity.this.setResult(RESULT_OK);
-                WelcomeActivity.this.finish();
-            }
-
-            @Override
-            public void onFailed(String reason) {
-                Toast.makeText(WelcomeActivity.this, "Authorization failed", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 }

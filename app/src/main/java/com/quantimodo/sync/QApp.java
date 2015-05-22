@@ -1,6 +1,8 @@
 package com.quantimodo.sync;
 
 import android.app.Application;
+import com.uservoice.uservoicesdk.Config;
+import com.uservoice.uservoicesdk.UserVoice;
 import dagger.ObjectGraph;
 import de.greenrobot.event.EventBus;
 
@@ -12,6 +14,12 @@ public class QApp extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //Init uservoice
+        Config config = new Config("quantimodo.uservoice.com");
+        config.setForumId(211661);
+        UserVoice.init(config, this);
+
         instance = this;
         AppModule requestModule = new AppModule(getApplicationContext());
         objectGraph = ObjectGraph.create(requestModule);

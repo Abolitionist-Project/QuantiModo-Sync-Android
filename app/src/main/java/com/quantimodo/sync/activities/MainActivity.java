@@ -1,4 +1,4 @@
-package com.quantimodo.sync;
+package com.quantimodo.sync.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,10 +7,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import com.quantimodo.sync.AuthHelper;
+import com.quantimodo.sync.Global;
+import com.quantimodo.sync.QApp;
+import com.quantimodo.sync.R;
 import com.quantimodo.sync.fragments.ApplicationListFragment;
-import com.uservoice.uservoicesdk.Config;
-import com.uservoice.uservoicesdk.UserVoice;
+
+import javax.inject.Inject;
 
 //TODO 10.1/7 inch layouts
 //TODO Look into Linux user groups to see if we can use a file monitor to automatically get changes
@@ -20,19 +23,19 @@ public class MainActivity extends FragmentActivity {
 
     private static final int REQUEST_WELCOME = 100;
 
+    @Inject
+    AuthHelper authHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        QApp.inject(this);
+
         Global.init(this);
 
-        //Init uservoice
-        Config config = new Config("quantimodo.uservoice.com");
-        config.setForumId(211661);
-        UserVoice.init(config, this);
-
-        if (Global.qmAccountName == null) {
+        if (!authHelper.isLoggedIn()) {
             Intent intent = new Intent(this, WelcomeActivity.class);
             startActivityForResult(intent, REQUEST_WELCOME);
         } else {

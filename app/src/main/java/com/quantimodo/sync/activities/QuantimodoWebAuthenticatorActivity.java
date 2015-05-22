@@ -1,6 +1,7 @@
 package com.quantimodo.sync.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -22,6 +23,9 @@ import java.util.Random;
 
 public class QuantimodoWebAuthenticatorActivity extends Activity
 {
+
+    public static final int REQUEST_CODE = 124;
+
     @Inject
     AuthHelper authHelper;
 
@@ -123,8 +127,10 @@ public class QuantimodoWebAuthenticatorActivity extends Activity
 
                         authHelper.setAuthToken(new AuthHelper.AuthToken(accessToken,refreshToken,System.currentTimeMillis()/1000 + expiresIn));
 
+                        setResult(RESULT_OK);
                         finish();
                     } catch (NullPointerException ignored) {
+                        setResult(RESULT_CANCELED);
                         Log.i("Error getting access token: " + result.get("error").getAsString() + ", " + result.get("error_description").getAsString());
                     }
                 }
