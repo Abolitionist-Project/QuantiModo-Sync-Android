@@ -182,29 +182,29 @@ public class SettingsActivity extends PreferenceActivity {
             checkBoxPreference.setSummary(R.string.pref_sync_appdata_disabled);
         }
 
-        lpSyncInterval = (ListPreference) findPreference("syncInterval");
-        String currentValue = lpSyncInterval.getEntries()[Global.syncInterval].toString();
-        lpSyncInterval.setSummary(currentValue);
-        lpSyncInterval.setOnPreferenceChangeListener(onSyncIntervalChanged);
-        lpSyncInterval.setEnabled(syncAutomatically);
-
-        cbWiFiOnly = (CheckBoxPreference) findPreference("wifiOnly");
-        cbWiFiOnly.setOnPreferenceChangeListener(onWifiOnlyChanged);
-        cbWiFiOnly.setEnabled(syncAutomatically);
-        if (Global.wifiOnly) {
-            cbWiFiOnly.setSummary(R.string.pref_wifiOnly_true);
-        } else {
-            cbWiFiOnly.setSummary(R.string.pref_wifiOnly_false);
-        }
-
-        cbChargingOnly = (CheckBoxPreference) findPreference("chargingOnly");
-        cbChargingOnly.setOnPreferenceChangeListener(onChargingOnlyChanged);
-        cbChargingOnly.setEnabled(syncAutomatically);
-        if (Global.wifiOnly) {
-            cbChargingOnly.setSummary(R.string.pref_chargingOnly_true);
-        } else {
-            cbChargingOnly.setSummary(R.string.pref_chargingOnly_false);
-        }
+//        lpSyncInterval = (ListPreference) findPreference("syncInterval");
+//        String currentValue = lpSyncInterval.getEntries()[Global.syncInterval].toString();
+//        lpSyncInterval.setSummary(currentValue);
+//        lpSyncInterval.setOnPreferenceChangeListener(onSyncIntervalChanged);
+//        lpSyncInterval.setEnabled(syncAutomatically);
+//
+//        cbWiFiOnly = (CheckBoxPreference) findPreference("wifiOnly");
+//        cbWiFiOnly.setOnPreferenceChangeListener(onWifiOnlyChanged);
+//        cbWiFiOnly.setEnabled(syncAutomatically);
+//        if (Global.wifiOnly) {
+//            cbWiFiOnly.setSummary(R.string.pref_wifiOnly_true);
+//        } else {
+//            cbWiFiOnly.setSummary(R.string.pref_wifiOnly_false);
+//        }
+//
+//        cbChargingOnly = (CheckBoxPreference) findPreference("chargingOnly");
+//        cbChargingOnly.setOnPreferenceChangeListener(onChargingOnlyChanged);
+//        cbChargingOnly.setEnabled(syncAutomatically);
+//        if (Global.wifiOnly) {
+//            cbChargingOnly.setSummary(R.string.pref_chargingOnly_true);
+//        } else {
+//            cbChargingOnly.setSummary(R.string.pref_chargingOnly_false);
+//        }
     }
 
 
