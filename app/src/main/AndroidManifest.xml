@@ -80,5 +80,8 @@
             android:authorities="com.quantimodo.sync.provider"
             android:exported="false" />
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="7d0f3286abdbe8fb1a32e5927676a402399e8413" />
     </application>
 </manifest>

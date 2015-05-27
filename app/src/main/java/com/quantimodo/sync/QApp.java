@@ -1,10 +1,13 @@
 package com.quantimodo.sync;
 
 import android.app.Application;
+import android.os.Build;
+import com.crashlytics.android.Crashlytics;
 import com.uservoice.uservoicesdk.Config;
 import com.uservoice.uservoicesdk.UserVoice;
 import dagger.ObjectGraph;
 import de.greenrobot.event.EventBus;
+import io.fabric.sdk.android.Fabric;
 
 public class QApp extends Application{
 
@@ -14,6 +17,9 @@ public class QApp extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(this, new Crashlytics());
+        }
 
         //Init uservoice
         Config config = new Config("quantimodo.uservoice.com");
