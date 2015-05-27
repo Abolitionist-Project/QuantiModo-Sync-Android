@@ -74,5 +74,11 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
+
+        <provider
+            android:name="com.quantimodo.sync.databases.QuantiSyncContentProvider"
+            android:authorities="com.quantimodo.sync.provider"
+            android:exported="false" />
+
     </application>
 </manifest>

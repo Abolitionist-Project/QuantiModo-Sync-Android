@@ -149,7 +149,9 @@ public class ApplicationData implements Comparable<ApplicationData> {
                                 SyncHelper.unscheduleSync(context);
                             } else {
                                 Log.i("Enabling sync, some apps are selected");
-                                SyncHelper.scheduleSync(context);
+                                if (!SyncHelper.isSync(context)) {
+                                    SyncHelper.scheduleSync(context);
+                                }
                             }
 
                             prefs.edit().putString("syncingPackages", newSyncingPackages).commit();
