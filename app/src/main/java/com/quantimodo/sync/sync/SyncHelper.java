@@ -21,6 +21,7 @@ public class SyncHelper {
         Intent intent = new Intent(ctx,SyncReciever.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(ctx,ID,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(alarmIntent);
         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,5000,RUN_SYNC_EVERY_TIME,alarmIntent);
         SharedPreferences preferences = ctx.getSharedPreferences(Global.QUANTIMODO_PREF_KEY,Context.MODE_PRIVATE);
         preferences.edit().putBoolean(Global.PREF_SYNC_ENABLED,true).apply();

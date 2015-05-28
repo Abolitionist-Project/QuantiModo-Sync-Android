@@ -54,7 +54,7 @@ public class MedHelperConverter implements Converter {
             long timestamp = ((Number) table.getData(recordNumber, "actualtime")).longValue() / 1000;
 
             if (!measurementSets.containsKey(name + unit)) {
-                MeasurementSet newSet = new MeasurementSet(name, null, "Medications", unit, MeasurementSet.COMBINE_MEAN, "Med Helper");
+                MeasurementSet newSet = new MeasurementSet(name, null, "Treatments", unit, MeasurementSet.COMBINE_MEAN, "Med Helper");
                 newSet.measurements.add(new Measurement(timestamp, dose));
                 measurementSets.put(name + unit, newSet);
             } else {

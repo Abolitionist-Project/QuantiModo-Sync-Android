@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import com.crashlytics.android.Crashlytics;
 import com.quantimodo.android.sdk.QuantimodoApi;
 import com.quantimodo.android.sdk.QuantimodoApiV2;
 import com.quantimodo.android.sdk.SdkResponse;
@@ -26,6 +27,7 @@ import com.quantimodo.sync.databases.QuantiSyncDbHelper;
 import com.quantimodo.sync.model.ApplicationData;
 import com.quantimodo.sync.model.HistoryItem;
 import com.quantimodo.sync.su.SU;
+import io.fabric.sdk.android.Fabric;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
@@ -218,12 +220,19 @@ public class SyncService extends IntentService {
         SU.stopProcess(suProcess, false);
 
         if (allNewData.size() > 0) {
-            QuantimodoApi qmClient = QuantimodoApi.getInstance();
-            int syncState = qmClient.putMeasurementsSynchronous(this, mToken, allNewData);
+            SdkResponse<Integer> syncState = mClient.putMeasurements(this, mToken, allNewData);
 
-            //TODO get proper error messages
-            if (syncState < 0) {
+            if (!syncState.isSuccessful()) {
                 saveHistory(historyItems, "Failed to upload to QuantiModo");
+
+                //Sends message to Fabric if this is not regular error.
+                if (syncState.getErrorCode() != SdkResponse.ERROR_AUTH && syncState.getErrorCode() != SdkResponse.ERROR_NO_INTERNET ){
+                    Crashlytics.getInstance().core.log(syncState.getMessage());
+                    if (syncState.getCause() != null) {
+                        Crashlytics.getInstance().core.logException(syncState.getCause());
+                    }
+                }
+
             } else {
                 saveHistory(historyItems, null);
             }
@@ -308,10 +317,6 @@ public class SyncService extends IntentService {
             } else {
                 values.put(QuantiSyncDbHelper.History.SYNCERROR, currentHistoryItem.syncError);
             }
-
-            //TODO find out if it's possible to use the ContentProvider here. I was getting a NullPointerException contentResolver.insert
-            //ContentResolver contentResolver = context.getContentResolver();
-            //contentResolver.insert(QuantiSyncContentProvider.CONTENT_URI_HISTORY, values);
 
             db.insert(QuantiSyncDbHelper.History.TABLE_NAME, null, values);
         }
