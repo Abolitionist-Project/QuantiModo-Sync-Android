@@ -81,6 +81,7 @@ public class SyncService extends IntentService {
     public void onCreate() {
         super.onCreate();
 
+        Fabric.with(this, new Crashlytics());
         QApp.inject(this);
         setIntentRedelivery(false);
     }
@@ -127,8 +128,7 @@ public class SyncService extends IntentService {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-//            Crashlytics.logException(e);
+            Crashlytics.getInstance().core.logException(e);
         }
     }
 
@@ -230,6 +230,8 @@ public class SyncService extends IntentService {
                     Crashlytics.getInstance().core.log(syncState.getMessage());
                     if (syncState.getCause() != null) {
                         Crashlytics.getInstance().core.logException(syncState.getCause());
+                    } else {
+                        Crashlytics.getInstance().core.logException(new Exception(syncState.getMessage()));
                     }
                 }
 
