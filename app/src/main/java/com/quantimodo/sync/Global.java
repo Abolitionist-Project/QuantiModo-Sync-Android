@@ -15,6 +15,8 @@ public class Global {
     public static final String QM_ID = "QuantiSync";
     public static final String QM_SECRET = "joeyrpmslrf8w4wef6weq9qytpu50374bosgr8";
     public static final String historyPackage = "syncs.sqlite";
+    public static final String QUANTIMODO_PREF_KEY = "com.quantimodo.sync";
+    public static final String PREF_SYNC_ENABLED = "syncEnabled";
 
     public static List<ApplicationData> applications = new ArrayList<ApplicationData>();
     public static List<SensorData> sensors = new ArrayList<SensorData>();

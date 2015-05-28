@@ -12,17 +12,18 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
+        android:name=".QApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Default">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,52 +32,39 @@
         </activity>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:theme="@style/Default.WhiteBg"
             android:label="@string/title_preferences"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
 
         <activity
-            android:name=".HistoryActivity"
+            android:name=".activities.HistoryActivity"
             android:label="@string/title_history"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
 
+        <activity android:name=".activities.QuantimodoWebAuthenticatorActivity"/>
+
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".activities.WelcomeActivity"
             android:label="Welcome"
             android:theme="@style/Default.Dialog" />
 
-        <service
-            android:name=".sync.AppDataSyncService"
-            android:exported="true"
-            android:process=":sync">
+        <service android:name=".sync.SyncService" android:exported="false"/>
+        <receiver android:name=".sync.SyncReciever" android:exported="false"/>
+
+        <receiver android:name=".receivers.BootCompletedReceiver">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/syncadapter_appdata" />
-        </service>
-
-        <provider
-            android:name="com.quantimodo.sync.sync.AppDataContentProvider"
-            android:authorities="com.quantimodo.sync.content-appdata"
-            android:syncable="true"
-            android:exported="false"
-            android:label="Tracking apps" />
-
-        <provider
-            android:name="com.quantimodo.sync.databases.QuantiSyncContentProvider"
-            android:authorities="com.quantimodo.sync.provider"
-            android:exported="false" />
+        </receiver>
 
         <receiver android:name=".receivers.PackagesChangedReceiver">
             <intent-filter>
@@ -86,5 +74,14 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
+
+        <provider
+            android:name="com.quantimodo.sync.databases.QuantiSyncContentProvider"
+            android:authorities="com.quantimodo.sync.provider"
+            android:exported="false" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="7d0f3286abdbe8fb1a32e5927676a402399e8413" />
     </application>
 </manifest>

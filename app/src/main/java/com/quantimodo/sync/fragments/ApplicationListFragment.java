@@ -1,27 +1,19 @@
 package com.quantimodo.sync.fragments;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import com.quantimodo.android.sdk.Quantimodo;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.R;
 import com.quantimodo.sync.model.ApplicationData;
-
+import com.quantimodo.sync.sync.SyncHelper;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -67,7 +59,7 @@ public class ApplicationListFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_sync) {
-            ContentResolver.requestSync(Quantimodo.getAccount(this.getActivity().getApplicationContext()), "com.quantimodo.sync.content-appdata", new Bundle());
+            SyncHelper.invokeSync(getActivity());
             return true;
         } else {
             return super.onOptionsItemSelected(item);

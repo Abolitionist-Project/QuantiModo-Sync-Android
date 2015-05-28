@@ -1,4 +1,4 @@
-package com.quantimodo.sync;
+package com.quantimodo.sync.activities;
 
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -14,6 +14,9 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.quantimodo.sync.Global;
+import com.quantimodo.sync.Log;
+import com.quantimodo.sync.R;
 import com.quantimodo.sync.databases.QuantiSyncContentProvider;
 import com.quantimodo.sync.databases.QuantiSyncDbHelper;
 import com.quantimodo.sync.model.ApplicationData;

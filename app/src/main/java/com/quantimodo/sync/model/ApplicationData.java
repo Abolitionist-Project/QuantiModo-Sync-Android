@@ -1,37 +1,28 @@
 package com.quantimodo.sync.model;
 
-import android.accounts.Account;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.os.Handler;
-
-import com.quantimodo.android.sdk.Quantimodo;
 import com.quantimodo.sync.Global;
 import com.quantimodo.sync.Log;
 import com.quantimodo.sync.R;
-
+import com.quantimodo.sync.sync.SyncHelper;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ApplicationData implements Comparable<ApplicationData> {
     public String syncStatus;
@@ -71,7 +62,7 @@ public class ApplicationData implements Comparable<ApplicationData> {
                 if (!currentSyncingPackages.contains(thisSyncingApp)) {
                     if (currentSyncingPackages.length() == 0) {
                         Log.i("Enabling tracking apps sync, new app selected");
-                        ContentResolver.setSyncAutomatically(Quantimodo.getAccount(context), "com.quantimodo.sync.content-appdata", true);
+                        SyncHelper.scheduleSync(context);
                     }
                     currentSyncingPackages = currentSyncingPackages.concat(thisSyncingApp);
                 }
@@ -80,7 +71,7 @@ public class ApplicationData implements Comparable<ApplicationData> {
                     currentSyncingPackages = currentSyncingPackages.replace(thisSyncingApp, "");
                     if (currentSyncingPackages.length() == 0) {
                         Log.i("Disabling tracking apps sync, no apps selected");
-                        ContentResolver.setSyncAutomatically(Quantimodo.getAccount(context), "com.quantimodo.sync.content-appdata", false);
+                        SyncHelper.unscheduleSync(context);
                     }
                 }
             }
@@ -153,13 +144,14 @@ public class ApplicationData implements Comparable<ApplicationData> {
                         public void endDocument() {
                             Collections.sort(tempApps);
 
-                            Account account = Quantimodo.getAccount(context);
                             if (newSyncingPackages.length() == 0) {
                                 Log.i("Disabling sync, no apps selected");
-                                ContentResolver.setSyncAutomatically(account, "com.quantimodo.sync.content-appdata", false);
+                                SyncHelper.unscheduleSync(context);
                             } else {
                                 Log.i("Enabling sync, some apps are selected");
-                                ContentResolver.setSyncAutomatically(account, "com.quantimodo.sync.content-appdata", true);
+                                if (!SyncHelper.isSync(context)) {
+                                    SyncHelper.scheduleSync(context);
+                                }
                             }
 
                             prefs.edit().putString("syncingPackages", newSyncingPackages).commit();

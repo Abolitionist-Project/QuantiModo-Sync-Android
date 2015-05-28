@@ -1,17 +1,51 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'https://maven.fabric.io/public' }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.1.1'
+
+        // the latest version of the android-apt plugin, to process anotations
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     compile 'com.android.support:support-v13:20.0.0'
-    compile 'com.quantimodo.android.sdk:sdk:1.0.1'
+    compile 'com.quantimodo.android:sdk:2.2'
     compile 'se.emilsjolander:stickylistheaders:2.5.0'
 
     // ETL libraries
     compile 'net.sf.opencsv:opencsv:2.3'
 
+    //EventBus from greenrobot https://github.com/greenrobot/EventBus
+    compile 'de.greenrobot:eventbus:2.4.0'
+
+    //Dagger DI http://square.github.io/dagger/
+    compile 'com.squareup.dagger:dagger:1.2.2'
+    apt 'com.squareup.dagger:dagger-compiler:1.2.2'
+
+    //ButterKnife ViewInjection http://jakewharton.github.io/butterknife/
+    compile 'com.jakewharton:butterknife:6.1.0'
+
     //UserVoice sdk https://github.com/uservoice/uservoice-android-sdk
     compile 'com.uservoice:uservoice-android-sdk:+'
+    compile('com.crashlytics.sdk.android:crashlytics:2.3.0@aar') {
+        transitive = true;
+    }
 }
 
 android {
