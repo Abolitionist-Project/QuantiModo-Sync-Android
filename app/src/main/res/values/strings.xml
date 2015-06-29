@@ -61,4 +61,5 @@
     <string name="auth_logout">Log out?</string>
     <string name="dialog_ok">ok</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="oauth_refresh_failed">Failed to refresh token</string>
 </resources>

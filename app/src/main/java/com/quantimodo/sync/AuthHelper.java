@@ -2,6 +2,8 @@ package com.quantimodo.sync;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Toast;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonObject;
 import com.koushikdutta.ion.Ion;
 import com.quantimodo.android.sdk.SdkDefs;
@@ -37,7 +39,7 @@ public class AuthHelper {
 
     public AuthToken refreshToken(AuthToken authToken){
         try {
-            JsonObject tokenResult = Ion.with(mCtx, SdkDefs.QUANTIMODO_ADDRESS + "api/oauth2/token")
+            JsonObject tokenResult = Ion.with(mCtx, Global.QUANTIMODO_ADDRESS + "api/oauth2/token")
                     .setBodyParameter("client_id", mClientId)
                     .setBodyParameter("client_secret", mClientSecret)
                     .setBodyParameter("grant_type", "refresh_token")
@@ -45,14 +47,28 @@ public class AuthHelper {
                     .asJsonObject()
                     .get();
 
-            String accessToken = tokenResult.get("access_token").getAsString();
-            int expiresIn = tokenResult.get("expires_in").getAsInt();
+            String accessToken = null;
+            String refreshToken = authToken.refreshToken;
+            int expiresIn = 0;
+            if (tokenResult.has("error")){
+                Toast.makeText(mCtx, R.string.oauth_refresh_failed, Toast.LENGTH_LONG).show();
+                QApp.postEvent(new NoAuthEvent());
+                return null;
+            }
+            if (tokenResult.has("access_token")) {
+                accessToken = tokenResult.get("access_token").getAsString();
+                expiresIn = tokenResult.get("expires_in").getAsInt();
+            }
+            if (tokenResult.has("refresh_token")){
+                refreshToken = tokenResult.get("refresh_token").getAsString();
+            }
 
-            AuthToken at = new AuthToken(accessToken,authToken.refreshToken,System.currentTimeMillis()/1000 + expiresIn);
+            AuthToken at = new AuthToken(accessToken,refreshToken, System.currentTimeMillis()/1000 + expiresIn);
             saveAuthToken(at);
             return authToken;
         } catch (InterruptedException | ExecutionException e) {
             Log.i("Couldn't get new auth token");
+            Crashlytics.getInstance().core.logException(e);
         }
 
         return null;

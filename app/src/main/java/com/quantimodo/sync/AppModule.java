@@ -32,7 +32,7 @@ public class AppModule {
     public AppModule(Context ctx) {
         mContext = ctx.getApplicationContext();
         mAuthHelper = new AuthHelper(mContext);
-        mClient = QuantimodoApiV2.getInstance(null);
+        mClient = QuantimodoApiV2.getInstance(Global.QUANTIMODO_ADDRESS);
     }
 
 //    @Provides

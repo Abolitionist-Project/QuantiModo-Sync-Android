@@ -1,7 +1,6 @@
 package com.quantimodo.sync.activities;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -15,7 +14,6 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 import com.quantimodo.android.sdk.QuantimodoApi;
-import com.quantimodo.android.sdk.SdkDefs;
 import com.quantimodo.sync.*;
 
 import javax.inject.Inject;
@@ -79,7 +77,7 @@ public class QuantimodoWebAuthenticatorActivity extends Activity
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setSavePassword(false);       // Deprecated in 18, passwords won't be saved by default from then on
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl(SdkDefs.QUANTIMODO_ADDRESS + "wp-login.php");
+        webView.loadUrl(Global.QUANTIMODO_ADDRESS + "wp-login.php");
     }
 
     private void initOAuthWebView() {
@@ -96,7 +94,7 @@ public class QuantimodoWebAuthenticatorActivity extends Activity
             }
         }));
 
-        webView.loadUrl(SdkDefs.QUANTIMODO_ADDRESS + "api/oauth2/authorize?client_id=" + authHelper.getClientId() + "&response_type=code&scope=" + Global.QM_SCOPES + "&state=" + mNonce);
+        webView.loadUrl(Global.QUANTIMODO_ADDRESS + "api/oauth2/authorize?client_id=" + authHelper.getClientId() + "&response_type=code&scope=" + Global.QM_SCOPES + "&state=" + mNonce);
     }
 
     private void handleAuthorizationSuccess(String authorizationCode, String nonce) {
@@ -162,8 +160,8 @@ public class QuantimodoWebAuthenticatorActivity extends Activity
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.startsWith(SdkDefs.QUANTIMODO_ADDRESS)) {
-                String cookies = cookieManager.getCookie(SdkDefs.QUANTIMODO_ADDRESS);
+            if (url.startsWith(Global.QUANTIMODO_ADDRESS)) {
+                String cookies = cookieManager.getCookie(Global.QUANTIMODO_ADDRESS);
                 if (cookies != null && cookies.contains("wordpress_logged_in")) {
                     String[] splits = cookies.split("; ");
                     for (String cookie : splits) {
@@ -196,7 +194,7 @@ public class QuantimodoWebAuthenticatorActivity extends Activity
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (!url.startsWith(SdkDefs.QUANTIMODO_ADDRESS)) {
+            if (!url.startsWith(Global.QUANTIMODO_ADDRESS)) {
                 int startCode = url.indexOf("code=") + 5;
                 int endCode = url.indexOf("&state=");
 
