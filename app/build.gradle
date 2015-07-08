@@ -74,8 +74,8 @@ android {
         applicationId "com.quantimodo.sync"
         minSdkVersion 14
         targetSdkVersion 19
-        versionCode 116
-        versionName "1.1.6"
+        versionCode 118
+        versionName "1.1.8"
     }
     buildTypes {
         release {
